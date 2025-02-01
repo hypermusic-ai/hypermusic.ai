@@ -1,10 +1,14 @@
+import 'package:tuple/tuple.dart';
+
+typedef TransformFunctionDef = Tuple2<String, List<dynamic>>;
 
 class Feature 
 {
   final String name;
   final String description;
   final List<Feature> composites;
-  final Map<String, List<Map<String, dynamic>>> transformationsMap;
+  //[featutename] -> List{Tuple2{string, List<dynamic>}}
+  final Map<String, List<TransformFunctionDef>> transformationsMap;
   final String condition;
 
   const Feature({
@@ -15,22 +19,36 @@ class Feature
     this.condition = 'true',
   });
 
-  Map<String, dynamic> toJson(Feature feature) {
+  Map<String, dynamic> toJson() {
     return {
-      'name': feature.name,
-      'description': feature.description,
-      'composites': feature.composites,
-      'transformationsMap': feature.transformationsMap,
-      'condition': feature.condition,
+      'name': name,
+      'description': description,
+      'composites': composites,
+      'transformationsMap': transformationsMap,
+      'condition': condition,
     };
   }
 
-  Feature copyWith({String? name, String? description, List<Feature>? composites, Map<String, List<Map<String, dynamic>>>? transformationsMap, String? condition}) {
+  Feature copyWith({String? name, String? description, List<Feature>? composites, Map<String, List<TransformFunctionDef>>? transformationsMap, String? condition}) {
+  
+    List<Feature> compositesDeepCopy = [];
+    for (var key in (composites ?? this.composites)) {
+        compositesDeepCopy.add(key);
+    }
+
+    Map<String, List<TransformFunctionDef>> transformDeepCopy = {};
+    (transformationsMap ?? this.transformationsMap).forEach((key, value) {
+      // For each list in the map, create a new list with deep copies of the objects
+      transformDeepCopy[key] = value.map((transformFunctionDef) {
+        return Tuple2(transformFunctionDef.item1, List.from(transformFunctionDef.item2));
+      }).toList();
+    });
+
     return Feature(
       name: name ?? this.name,
       description: description ?? this.description,
-      composites: composites ?? this.composites,
-      transformationsMap: transformationsMap ?? this.transformationsMap,
+      composites: compositesDeepCopy,
+      transformationsMap: transformDeepCopy,
       condition: condition ?? this.condition,
     );
   }
@@ -60,12 +78,14 @@ class Feature
     final actualOpId = opId % transformations.length;
     final transformation = transformations[actualOpId];
 
-    final args = transformation['args'] as List<dynamic>;
-    if (transformation['name'] == 'Add') {
+    final name = transformation.item1;
+    if (name == 'Add') {
+      final args = transformation.item2 as List<int>;
       return {'value': x + args[0]};
-    } else if (transformation['name'] == 'Mul') {
+    } else if (name == 'Mul') {
+      final args = transformation.item2 as List<int>;
       return {'value': x * args[0]};
-    } else if (transformation['name'] == 'Nop') {
+    } else if (name == 'Nop') {
       return {'value': x};
     }
 

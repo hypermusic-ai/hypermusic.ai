@@ -1,0 +1,28 @@
+^E:\REPOS\PERSONAL\HYPERMUSIC.AI\BUILD\WINDOWS\X64\CMAKEFILES\6A73EAA9B916BC29912FA14B1999275B\FLUTTER_WINDOWS.DLL.RULE
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E env FLUTTER_ROOT=E:\flutter PROJECT_DIR=E:\repos\personal\hypermusic.ai FLUTTER_ROOT=E:\flutter FLUTTER_EPHEMERAL_DIR=E:\repos\personal\hypermusic.ai\windows\flutter\ephemeral PROJECT_DIR=E:\repos\personal\hypermusic.ai FLUTTER_TARGET=E:\repos\personal\hypermusic.ai\lib\main.dart DART_OBFUSCATION=false TRACK_WIDGET_CREATION=true TREE_SHAKE_ICONS=false PACKAGE_CONFIG=E:\repos\personal\hypermusic.ai\.dart_tool\package_config.json E:/flutter/packages/flutter_tools/bin/tool_backend.bat windows-x64 Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^E:\REPOS\PERSONAL\HYPERMUSIC.AI\BUILD\WINDOWS\X64\CMAKEFILES\E97CACD6B88E9D8A558AE2475BE97ECE\FLUTTER_ASSEMBLE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^E:\REPOS\PERSONAL\HYPERMUSIC.AI\WINDOWS\FLUTTER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SE:/repos/personal/hypermusic.ai/windows -BE:/repos/personal/hypermusic.ai/build/windows/x64 --check-stamp-file E:/repos/personal/hypermusic.ai/build/windows/x64/flutter/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

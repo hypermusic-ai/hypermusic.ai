@@ -1,4 +1,5 @@
-import 'dart:convert'; // For utf8 encoding
+import 'dart:convert';
+
 import 'package:crypto/crypto.dart'; // For hashing
 
 // Models
@@ -37,15 +38,15 @@ class RegistryController implements DataInterfaceController
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final registrationId = sha256FromString('${feature.name}_$timestamp');
 
-    assert(_features[feature.name]!.containsKey(registrationId), "already contains this version");
+    assert(_features[feature.name]!.containsKey(registrationId) == false, "already contains ${feature.name} with version $registrationId");
     if(_features[feature.name]!.containsKey(registrationId))return null;
-    
+
+
     _features[feature.name]![registrationId] = feature;
     _newestFeatureVersion[feature.name] = registrationId;
 
     // construct empty map for running instances
     _runningInstances[feature.name]![registrationId] = {};
-
     return registrationId;
   }
 
@@ -106,7 +107,7 @@ class RegistryController implements DataInterfaceController
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final registrationId = sha256FromString('${featureName}_${featureVersion}_$timestamp');
 
-    assert(_runningInstances[featureName]![featureVersion]!.containsKey(registrationId), "already contains this version");
+    assert(_runningInstances[featureName]![featureVersion]!.containsKey(registrationId) == false, "already contains this version");
     if(_runningInstances[featureName]![featureVersion]!.containsKey(registrationId))return null;
 
     _runningInstances[featureName]![featureVersion]![registrationId] = instance;

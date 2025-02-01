@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TransformationNode extends StatefulWidget {
   final String transformationName;
-  final List<int> args;
+  final List<dynamic> args;
   final void Function(List<int>)? onArgsChanged;
 
   const TransformationNode({
@@ -58,7 +58,7 @@ class _TransformationNodeState extends State<TransformationNode> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(0),
       child: Row(
         children: [
           Expanded(

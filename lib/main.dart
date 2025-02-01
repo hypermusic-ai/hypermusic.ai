@@ -24,12 +24,12 @@ void fetchFeatures(DataInterfaceController registry) async {
   print("Test Build Web");
 }
 
-void main() {
+void main() async {
 
   final DataInterfaceController registry = RegistryController();
 
   // Initialize the registry with default features and transformations
-  RegistryInitializer.initialize(registry);
+  await RegistryInitializer.initialize(registry);
   fetchFeatures(registry);
 
   runApp(
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: Colors.white,
       ),
-      initialRoute: '/',
+      initialRoute: '/edit',
       routes: {
         '/': (context) => HomePage(dataInterfaceController: Provider.of<DataInterfaceController>(context, listen: false)),
         '/edit': (context) => EditPage(dataInterfaceController: Provider.of<DataInterfaceController>(context, listen: false),),

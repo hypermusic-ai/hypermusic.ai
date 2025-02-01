@@ -70,7 +70,7 @@ class _TransformationPropertyPanelState
                     // Parse the argument
                     final argValue = int.tryParse(_argController.text) ?? 0;
                     final updatedTransformation = Transformation(
-                      widget.transformation.name,
+                      name : widget.transformation.name,
                       args: [argValue],
                     );
                     widget.onApply(updatedTransformation);

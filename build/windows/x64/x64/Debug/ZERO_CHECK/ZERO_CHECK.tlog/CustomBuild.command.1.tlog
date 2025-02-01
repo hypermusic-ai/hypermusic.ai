@@ -1,0 +1,10 @@
+^E:\REPOS\PERSONAL\HYPERMUSIC.AI\BUILD\WINDOWS\X64\CMAKEFILES\7FB7FE6DBB347696588AD987061BE3CA\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SE:/repos/personal/hypermusic.ai/windows -BE:/repos/personal/hypermusic.ai/build/windows/x64 --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file E:/repos/personal/hypermusic.ai/build/windows/x64/flutter_application_1.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

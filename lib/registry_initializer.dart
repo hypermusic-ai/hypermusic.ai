@@ -1,4 +1,6 @@
 import 'model/feature.dart';
+import 'package:tuple/tuple.dart';
+
 import 'model/running_instance.dart';
 import 'package:hypermusic/controller/data_interface_controller.dart';
 
@@ -82,33 +84,16 @@ class RegistryInitializer {
             registry.getFeature("Time", timeVer)!,
         ],
         transformationsMap: {
-          'FeatureA/Pitch': [
-            {
-              'name': 'Add',
-              'args': [3],
-            },
-            {
-              'name': 'Mul',
-              'args': [2],
-            },
-            {
-              'name': 'Nop',
-              'args': [],
-            },
-            {
-              'name': 'Add',
-              'args': [1]
-            },
+          'Pitch': [
+            Tuple2('Add', [1]),
+            Tuple2('Add', [2]),            
+            Tuple2('Add', [3]),
           ],
-          'FeatureA/Time': [
-            {
-              'name': 'Add',
-              'args': [1],
-            },
-            {
-              'name': 'Add',
-              'args': [2],
-            },
+          'Time': [
+            Tuple2('Add', [1]),
+            Tuple2('Add', [2]),
+            Tuple2('Nop', [])
+
           ],
         },
     ));
@@ -135,29 +120,15 @@ class RegistryInitializer {
             registry.getFeature("FeatureA", featureAVer)!,
         ],
         transformationsMap: {
-          'FeatureB/Duration': [
-            {
-              'name': 'Add',
-              'args': [5],
-            },
-            {
-              'name': 'Add',
-              'args': [3],
-            },
+          'Duration': [
+            Tuple2('Add', [5]),
+            Tuple2('Mul', [2]),            
+            Tuple2('Nop', []),
           ],
-          'FeatureB/FeatureA': [
-            {
-              'name': 'Add',
-              'args': [1],
-            },
-            {
-              'name': 'Add',
-              'args': [2],
-            },
-            {
-              'name': 'Add',
-              'args': [3],
-            },
+          'FeatureA': [
+            Tuple2('Add', [5]),
+            Tuple2('Nop', []),            
+            Tuple2('Mul', [7]),            
           ],
         },
     ));

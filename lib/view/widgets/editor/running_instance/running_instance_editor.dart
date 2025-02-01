@@ -22,24 +22,24 @@ class _RunningInstanceEditorState extends State<RunningInstanceEditor> {
   @override
   void initState() {
     super.initState();
+
     final runningInstance = widget.runningInstanceEditorController.value;
 
     _startPointController = TextEditingController(text: runningInstance.startPoint.toString());
     _transformationStartIndexController = TextEditingController(text: runningInstance.transformationStartIndex.toString());
     _transformationEndIndexController = TextEditingController(text: runningInstance.transformationEndIndex.toString());
 
-    final instance = widget.runningInstanceEditorController.value;
 
     _startPointController.addListener(  
-      () => instance.copyWith(startPoint: int.tryParse(_startPointController.text) ?? 0)
+      () => runningInstance.copyWith(startPoint: int.tryParse(_startPointController.text) ?? 0)
     );
 
     _transformationStartIndexController.addListener(
-      () => instance.copyWith(transformationStartIndex: int.tryParse(_transformationStartIndexController.text) ?? 0)
+      () => runningInstance.copyWith(transformationStartIndex: int.tryParse(_transformationStartIndexController.text) ?? 0)
     );
 
     _transformationEndIndexController.addListener(
-      () => instance.copyWith(transformationEndIndex: int.tryParse(_transformationEndIndexController.text) ?? 0)
+      () => runningInstance.copyWith(transformationEndIndex: int.tryParse(_transformationEndIndexController.text) ?? 0)
     );
   }
 
@@ -53,46 +53,91 @@ class _RunningInstanceEditorState extends State<RunningInstanceEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        Row(
+    _startPointController.text = widget.runningInstanceEditorController.value.startPoint.toString();
+
+    return 
+    Container(
+      decoration: 
+        BoxDecoration(
+          border: Border.all(color: Theme.of(context).dividerColor)
+        ),
+      child :
+        Column(
           children: [
-            const Text('Starting Point: '),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 100,
-              child: TextField(
-                controller: _startPointController,
-                keyboardType: TextInputType.number,
-              ),
+            Row(
+              children: [
+                Padding( padding: const EdgeInsets.all(4.0),
+                child:
+                SizedBox(
+                  width: 50,
+                  height: 20,
+                  child: TextField(
+                    controller: _startPointController,
+                    keyboardType: TextInputType.number,
+                    style: TextStyle(fontSize: 11),
+                    decoration: const InputDecoration(
+                      labelText: 'start',
+                      labelStyle: TextStyle(fontSize: 11),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0), // Keep vertical padding minimal
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(2)),
+                      ),
+                    ),
+                  ),
+                ),
+                )
+              ],
+            ),
+            Row(
+              children: [ 
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child:             const Text('Transformation range: ', style: TextStyle(fontSize: 11),),
+                ),
+                Padding( padding: const EdgeInsets.all(4.0),
+                child:
+                SizedBox(
+                  width: 50,
+                  height: 20,
+                  child: TextField(
+                    controller: _transformationStartIndexController,
+                    keyboardType: TextInputType.number,
+                    style: TextStyle(fontSize: 11),
+                    decoration: const InputDecoration(
+                      labelText: 'from',
+                      labelStyle: TextStyle(fontSize: 11),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0), // Keep vertical padding minimal
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(2)),
+                      ),
+                    ),
+                  ),
+                ),
+                ),
+                Padding( padding: const EdgeInsets.all(4.0),
+                child:
+                SizedBox(
+                  width: 50,
+                  height: 20,
+                  child: TextField(
+                    controller: _transformationEndIndexController,
+                    keyboardType: TextInputType.number,
+                    style: TextStyle(fontSize: 11),
+                    decoration: const InputDecoration(
+                      labelText: 'to',
+                      labelStyle: TextStyle(fontSize: 11),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0), // Keep vertical padding minimal
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(2)),
+                      ),
+                    ),
+                  ),
+                ),
+               )
+              ],
             ),
           ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            const Text('Transformation Range: '),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 100,
-              child: TextField(
-                controller: _transformationStartIndexController,
-                keyboardType: TextInputType.number,
-              ),
-            ),
-            const Text(' to '),
-            SizedBox(
-              width: 100,
-              child: TextField(
-                controller: _transformationEndIndexController,
-                keyboardType: TextInputType.number,
-              ),
-            ),
-          ],
-        ),
-      ],
+        )
     );
   }
 }

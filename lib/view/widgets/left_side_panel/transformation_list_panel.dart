@@ -66,7 +66,7 @@ class TransformationListPanel extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 2.0),
                       child: DraggableTransformationItem(
                         transformation: Transformation(
-                          transformationName,
+                          name: transformationName,
                           args: [0], // Default argument
                         ),
                       ),

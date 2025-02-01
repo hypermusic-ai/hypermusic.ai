@@ -2,7 +2,7 @@ class Transformation {
   final String name;
   final List<int> args;
 
-  Transformation(this.name, {this.args = const []});
+  Transformation({required this.name, this.args = const []});
 
   int run(int x) {
     return switch (name) {

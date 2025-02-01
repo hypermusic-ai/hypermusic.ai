@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 //Views
 import 'package:hypermusic/view/widgets/left_side_panel/left_side_panel.dart';
-import 'package:hypermusic/view/widgets/editor/feature/feature_builder_panel.dart';
+import 'package:hypermusic/view/widgets/editor/pt_builder_panel.dart';
 import 'package:hypermusic/view/widgets/top_nav_bar.dart';
 
 //Controllers
