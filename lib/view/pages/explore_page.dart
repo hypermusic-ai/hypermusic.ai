@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // Views
-import 'package:hypermusic/view/widgets/top_nav_bar.dart';
+import '../widgets/top_nav_bar.dart';
 
 class ExplorePage extends StatelessWidget {
   @override

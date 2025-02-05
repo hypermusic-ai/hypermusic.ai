@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // Models
-import 'package:hypermusic/model/transformation.dart';
+import '../../../model/transformation.dart';
 
 class DraggableTransformationItem extends StatelessWidget {
   final Transformation transformation;

@@ -2,20 +2,20 @@ import 'package:flutter/material.dart'; //Flutter material widget library
 import 'package:provider/provider.dart'; //access and watch the MetaMaskProvider state using the Provider package
 
 // Providers
-import 'package:hypermusic/providers/meta_mask_provider.dart';
+import '../../providers/meta_mask_provider.dart';
 
 // Views
-import 'package:hypermusic/view/pages/feature_fetcher_page.dart';
-import 'package:hypermusic/view/widgets/feature_fetcher_button.dart';
-import 'package:hypermusic/view/widgets/typewriter_text.dart';
-import 'package:hypermusic/view/widgets/top_nav_bar.dart';
+import 'feature_fetcher_page.dart';
+import '../widgets/feature_fetcher_button.dart';
+import '../widgets/typewriter_text.dart';
+import '../widgets/top_nav_bar.dart';
 
 // Controllers
-import 'package:hypermusic/controller/data_interface_controller.dart';
+import '../../controller/data_interface.dart';
 
 class HomePage extends StatelessWidget 
 {
-  final DataInterfaceController dataInterfaceController;
+  final DataInterface registry;
 
   //contains the phrases that TypewriterText will cycle through.
   //These strings describe the vision or theme of the app:
@@ -26,7 +26,7 @@ class HomePage extends StatelessWidget
     "Explore the potential of interconnected musical structures."
   ];
 
- HomePage({super.key, required this.dataInterfaceController});
+ HomePage({super.key, required this.registry});
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +102,7 @@ class HomePage extends StatelessWidget
 
               // Insert the feature fetcher button here
               // This button will fetch features from the Registry when clicked
-              FeatureFetcherButton(dataInterfaceController: dataInterfaceController),
+              FeatureFetcherButton(registry: registry),
               const SizedBox(height: 20),
 
               // Add a link to navigate to the page-based feature fetcher
@@ -113,7 +113,7 @@ class HomePage extends StatelessWidget
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            FeatureFetcherPage(dataInterfaceController: dataInterfaceController)),
+                            FeatureFetcherPage(registry: registry)),
                   );
                 },
                 child: Text("View Features Page"),

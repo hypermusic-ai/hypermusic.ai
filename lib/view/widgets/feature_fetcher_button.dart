@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 // Views
-import 'package:hypermusic/view/pages/feature_fetcher_page.dart';
+import '../pages/feature_fetcher_page.dart';
 
 // Controllers
-import 'package:hypermusic/controller/data_interface_controller.dart';
+import '../../controller/data_interface.dart';
 
 
 class FeatureFetcherButton extends StatelessWidget {
 
-  final DataInterfaceController dataInterfaceController;
+  final DataInterface registry;
 
-  FeatureFetcherButton({super.key, required this.dataInterfaceController});
+  FeatureFetcherButton({super.key, required this.registry});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class FeatureFetcherButton extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => FeatureFetcherPage(dataInterfaceController: dataInterfaceController),
+            builder: (context) => FeatureFetcherPage(registry: registry),
           ),
         );
       },

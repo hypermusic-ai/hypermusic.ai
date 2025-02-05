@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+
+// Models
 import '../../../model/transformation.dart';
 
 // Views
-import 'package:hypermusic/view/widgets/draggable/draggable_transformation_item.dart';
+import '../draggable/draggable_transformation_item.dart';
 
 // Controllers
-import 'package:hypermusic/controller/data_interface_controller.dart';
+import '../../../controller/data_interface.dart';
 
 class TransformationListPanel extends StatelessWidget {
-  final DataInterfaceController dataInterfaceController;
+  final DataInterface registry;
 
   const TransformationListPanel({
     super.key,
-    required this.dataInterfaceController,
+    required this.registry,
   });
 
   @override
@@ -43,7 +45,7 @@ class TransformationListPanel extends StatelessWidget {
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 200),
             child: FutureBuilder<List<String>>(
-              future: dataInterfaceController.getAllTransformations(),
+              future: registry.getAllTransformationNames(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -65,9 +67,8 @@ class TransformationListPanel extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2.0),
                       child: DraggableTransformationItem(
-                        transformation: Transformation(
+                        transformation: Transformation( 
                           name: transformationName,
-                          args: [0], // Default argument
                         ),
                       ),
                     );

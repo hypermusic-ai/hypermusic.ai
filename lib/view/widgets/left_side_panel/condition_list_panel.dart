@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
-import '../../../controller/data_interface_controller.dart';
+
+// Models
 import '../../../model/condition.dart';
+
+//Views
 import '../draggable/draggable_condition_item.dart';
 
+// Controllers
+import '../../../controller/data_interface.dart';
+
 class ConditionListPanel extends StatelessWidget {
-  final DataInterfaceController dataInterfaceController;
+  final DataInterface registry;
 
   const ConditionListPanel({
     super.key,
-    required this.dataInterfaceController,
+    required this.registry,
   });
 
   @override
@@ -39,7 +45,7 @@ class ConditionListPanel extends StatelessWidget {
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 200),
             child: FutureBuilder<List<String>>(
-              future: dataInterfaceController.getAllConditions(),
+              future: registry.getAllConditions(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());

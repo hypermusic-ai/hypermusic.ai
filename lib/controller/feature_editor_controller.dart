@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 // Models
-import 'package:hypermusic/model/feature.dart';
+import '../model/feature.dart';
+import '../model/transformation.dart';
 
 class FeatureEditorController extends ValueNotifier<Feature>
 {
@@ -18,33 +20,21 @@ class FeatureEditorController extends ValueNotifier<Feature>
     notifyListeners();
   }
 
-  void removeComposite(Feature feature)
+  void addTransformation(Feature feature, Transformation transformation)
   {
-    value.composites.remove(feature);
-    notifyListeners();
-  }
-  
-  void addComposite(Feature feature)
-  {
-    value.composites.add(feature);
-    notifyListeners();
-  }
-
-  void addTransformation(Feature feature, TransformFunctionDef transformation)
-  {
-    if(value.transformationsMap[feature.name] == null)
+    if(value.transformationsMap[feature] == null)
     {
-      value.transformationsMap[feature.name] = [];
+      value.transformationsMap[feature] = [];
     }
-    value.transformationsMap[feature.name]!.add(transformation);
+    value.transformationsMap[feature]!.add(transformation);
     notifyListeners();
   }
 
-  void removeTransformation(Feature feature, TransformFunctionDef transformation)
+  void removeTransformation(Feature feature, Transformation transformation)
   {
-    if(value.transformationsMap[feature.name] == null)return;
+    if(value.transformationsMap[feature] == null)return;
 
-    value.transformationsMap[feature.name]!.remove(transformation);
+    value.transformationsMap[feature]!.remove(transformation);
     notifyListeners();
   }
 }

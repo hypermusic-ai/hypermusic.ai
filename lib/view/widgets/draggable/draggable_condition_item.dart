@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // Models
-import 'package:hypermusic/model/condition.dart';
+import '../../../model/condition.dart';
 
 class DraggableConditionItem extends StatelessWidget {
 

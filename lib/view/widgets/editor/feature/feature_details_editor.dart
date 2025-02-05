@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
 // Controllers
-import 'package:hypermusic/controller/feature_editor_controller.dart';
+import '../../../../controller/feature_editor_controller.dart';
 
-class FeatureEditor extends StatefulWidget {
+class FeatureDetailsEditor extends StatefulWidget {
 
   final FeatureEditorController featureEditorController;
 
-  const FeatureEditor({super.key, required this.featureEditorController,});
+  const FeatureDetailsEditor({super.key, required this.featureEditorController,});
 
   @override
-  State<FeatureEditor> createState() => _FeatureEditorEditorState();
+  State<FeatureDetailsEditor> createState() => _FeatureEditorEditorState();
 }
 
-class _FeatureEditorEditorState extends State<FeatureEditor> {
+class _FeatureEditorEditorState extends State<FeatureDetailsEditor> {
 
   late TextEditingController _descriptionController;
 

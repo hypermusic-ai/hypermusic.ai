@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 
 // Views
-import 'package:hypermusic/view/widgets/editor/pt_editor.dart';
+import 'tree_editor/pt_tree_editor.dart';
 
 //Controllers
-import 'package:hypermusic/controller/data_interface_controller.dart';
-import 'package:hypermusic/controller/feature_editor_controller.dart';
+import '../../../controller/data_interface.dart';
 
 
 class FeatureBuilderPanel extends StatefulWidget {
 
-  final DataInterfaceController dataInterfaceController;
-  final FeatureEditorController featureEditorController;
+  final DataInterface registry;
 
   const FeatureBuilderPanel({
     super.key,
-    required this.dataInterfaceController,
-    required this.featureEditorController,
+    required this.registry,
   });
 
   @override
@@ -28,7 +25,8 @@ class _FeatureBuilderPanelState extends State<FeatureBuilderPanel> {
   bool _isBuilding = false;
 
   void _handleBuild() async {
-    if (widget.featureEditorController.value.name.isEmpty) {
+    String name = "";
+    if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter a name for the feature'),
@@ -120,7 +118,7 @@ class _FeatureBuilderPanelState extends State<FeatureBuilderPanel> {
         ),
         const SizedBox(height: 4),
         Expanded(
-          child: PTEditor()  
+          child: PTTreeEditor(registry: widget.registry)  
         ),
       ],
     );

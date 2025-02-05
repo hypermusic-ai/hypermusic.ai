@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 
 //Views
-import 'package:hypermusic/view/widgets/left_side_panel/left_side_panel.dart';
-import 'package:hypermusic/view/widgets/editor/pt_builder_panel.dart';
-import 'package:hypermusic/view/widgets/top_nav_bar.dart';
+import '../widgets/left_side_panel/left_side_panel.dart';
+import '../widgets/editor/pt_builder_panel.dart';
+import '../widgets/top_nav_bar.dart';
 
 //Controllers
-import 'package:hypermusic/controller/data_interface_controller.dart';
-import 'package:hypermusic/controller/feature_editor_controller.dart';
+import '../../controller/data_interface.dart';
 
 class EditPage extends StatefulWidget {
-  final DataInterfaceController dataInterfaceController;
-  final FeatureEditorController featureEditorController;
+  final DataInterface registry;
 
-  EditPage({super.key, required this.dataInterfaceController})
-  : featureEditorController = FeatureEditorController();
+  EditPage({super.key, required this.registry});
 
   @override
   State<EditPage> createState() => _EditPageState();
@@ -38,7 +35,7 @@ class _EditPageState extends State<EditPage> {
           SizedBox(
             width: 200,
             child: LeftSidePanel(
-              dataInterfaceController: widget.dataInterfaceController,
+              registry: widget.registry,
               key: leftSidePanelKey,
             ),
           ),
@@ -52,8 +49,7 @@ class _EditPageState extends State<EditPage> {
               ),
             ),
             child: FeatureBuilderPanel(
-              dataInterfaceController: widget.dataInterfaceController,
-              featureEditorController: widget.featureEditorController,
+              registry: widget.registry,
             ),
           ),
           Expanded(

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 // Models
-import 'package:hypermusic/model/condition.dart';
+import '../model/condition.dart';
 
 class ConditionEditorController extends ValueNotifier<Condition>
 {

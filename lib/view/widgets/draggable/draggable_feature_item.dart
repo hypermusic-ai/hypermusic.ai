@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // Models
-import 'package:hypermusic/model/feature.dart';
+import '../../../model/feature.dart';
 
 class DraggableFeatureItem extends StatelessWidget {
   final Feature feature;

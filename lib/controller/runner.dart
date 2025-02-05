@@ -1,11 +1,18 @@
 // Models
-import 'package:hypermusic/model/feature.dart';
+import '../model/feature.dart';
 
 // Controllers
-import 'package:hypermusic/controller/data_interface_controller.dart';
+import 'data_interface.dart';
+
+class SampleSource
+{
+  final List<Feature> feature;
+
+  SampleSource(this.feature);
+}
 
 class Runner {
-  final DataInterfaceController registry;
+  final DataInterface registry;
 
   Runner({required this.registry});
 

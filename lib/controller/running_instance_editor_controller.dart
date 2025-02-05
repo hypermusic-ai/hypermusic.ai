@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 // Models
-import 'package:hypermusic/model/running_instance.dart';
+import '../model/running_instance.dart';
 
 class RunningInstanceEditorController extends ValueNotifier<RunningInstance>
 {

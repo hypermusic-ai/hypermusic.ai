@@ -1,14 +1,17 @@
-import 'package:tuple/tuple.dart';
+import 'package:collection/collection.dart';
 
-typedef TransformFunctionDef = Tuple2<String, List<dynamic>>;
+// Utils
+import '../utils/multiset_comparison.dart';
+
+// Models
+import 'transformation.dart';
 
 class Feature 
 {
   final String name;
   final String description;
   final List<Feature> composites;
-  //[featutename] -> List{Tuple2{string, List<dynamic>}}
-  final Map<String, List<TransformFunctionDef>> transformationsMap;
+  final Map<Feature, List<Transformation>> transformationsMap;
   final String condition;
 
   const Feature({
@@ -29,19 +32,18 @@ class Feature
     };
   }
 
-  Feature copyWith({String? name, String? description, List<Feature>? composites, Map<String, List<TransformFunctionDef>>? transformationsMap, String? condition}) {
+  Feature copyWith({String? name, String? description, List<Feature>? composites, Map<Feature, List<Transformation>>? transformationsMap, String? condition}) {
   
     List<Feature> compositesDeepCopy = [];
     for (var key in (composites ?? this.composites)) {
         compositesDeepCopy.add(key);
     }
 
-    Map<String, List<TransformFunctionDef>> transformDeepCopy = {};
-    (transformationsMap ?? this.transformationsMap).forEach((key, value) {
+    Map<Feature, List<Transformation>> transformDeepCopy = {};
+
+     (transformationsMap ?? this.transformationsMap).forEach((key, value) {
       // For each list in the map, create a new list with deep copies of the objects
-      transformDeepCopy[key] = value.map((transformFunctionDef) {
-        return Tuple2(transformFunctionDef.item1, List.from(transformFunctionDef.item2));
-      }).toList();
+      transformDeepCopy[key] = value.map((transformation) {return transformation;}).toList();
     });
 
     return Feature(
@@ -52,6 +54,27 @@ class Feature
       condition: condition ?? this.condition,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! Feature) return false;
+
+    return name == other.name &&
+        description == other.description &&
+        areListsEqualMultiset(composites, other.composites) &&
+        const DeepCollectionEquality().equals(transformationsMap, other.transformationsMap) &&
+        condition == other.condition;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        name,
+        description,
+        const ListEquality().hash(composites),
+        const DeepCollectionEquality().hash(transformationsMap),
+        condition,
+      );
 
   bool isScalar() => composites.isEmpty;
   
@@ -78,12 +101,12 @@ class Feature
     final actualOpId = opId % transformations.length;
     final transformation = transformations[actualOpId];
 
-    final name = transformation.item1;
+    final name = transformation.name;
     if (name == 'Add') {
-      final args = transformation.item2 as List<int>;
+      final args = transformation.args;
       return {'value': x + args[0]};
     } else if (name == 'Mul') {
-      final args = transformation.item2 as List<int>;
+      final args = transformation.args;
       return {'value': x * args[0]};
     } else if (name == 'Nop') {
       return {'value': x};

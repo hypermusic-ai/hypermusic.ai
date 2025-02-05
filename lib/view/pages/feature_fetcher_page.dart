@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 // Controllers
-import 'package:hypermusic/controller/data_interface_controller.dart';
+import '../../controller/data_interface.dart';
 
 class FeatureFetcherPage extends StatelessWidget {
   
-  final DataInterfaceController dataInterfaceController;
+  final DataInterface registry;
 
-  const FeatureFetcherPage({super.key, required this.dataInterfaceController});
+  const FeatureFetcherPage({super.key, required this.registry});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class FeatureFetcherPage extends StatelessWidget {
       ),
       body: Center(
         child: FutureBuilder<List<String>>(
-          future: dataInterfaceController.getAllFeatureNames(),
+          future: registry.getAllFeatureNames(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();

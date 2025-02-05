@@ -1,53 +1,45 @@
 import 'package:flutter/material.dart';
 
-class TransformationNode extends StatefulWidget {
-  final String transformationName;
-  final List<dynamic> args;
-  final void Function(List<int>)? onArgsChanged;
+// Models
+import '../../../../model/transformation.dart'; // todo 
 
-  const TransformationNode({
+//Controllers
+import '../../../../controller/transformation_editor_controller.dart';
+
+class TransformationNode extends StatefulWidget {
+  final TransformationEditorController _transformationController;
+
+  TransformationNode({
     super.key,
-    required this.transformationName,
-    required this.args,
-    this.onArgsChanged,
-  });
+    TransformationEditorController? transformationController,
+  }) 
+  : _transformationController = transformationController ?? TransformationEditorController();
 
   @override
   State<TransformationNode> createState() => _TransformationNodeState();
+
+  TransformationEditorController get transformationController => _transformationController;
+  Transformation   get transformation => _transformationController.value;
 }
 
 class _TransformationNodeState extends State<TransformationNode> {
-  late TextEditingController _argController;
 
   @override
   void initState() {
     super.initState();
-    _argController = TextEditingController(
-      text: widget.args.isNotEmpty ? widget.args[0].toString() : '0',
-    );
   }
 
   @override
   void dispose() {
-    _argController.dispose();
     super.dispose();
   }
 
-  @override
-  void didUpdateWidget(TransformationNode oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.args != widget.args) {
-      _argController.text =
-          widget.args.isNotEmpty ? widget.args[0].toString() : '0';
-    }
-  }
-
   String _getTransformationDescription() {
-    switch (widget.transformationName) {
+    switch (widget.transformation.name) {
       case "Add":
-        return "Add ${widget.args.isNotEmpty ? widget.args[0] : 0} to index";
+        return "Add ${widget.transformation.args.isNotEmpty ? widget.transformation.args[0] : 0} to index";
       case "Mul":
-        return "Multiply index by ${widget.args.isNotEmpty ? widget.args[0] : 1}";
+        return "Multiply index by ${widget.transformation.args.isNotEmpty ? widget.transformation.args[0] : 1}";
       case "Nop":
         return "No operation (pass through)";
       default:
@@ -66,7 +58,7 @@ class _TransformationNodeState extends State<TransformationNode> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.transformationName,
+                  widget.transformation.name,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -76,29 +68,6 @@ class _TransformationNodeState extends State<TransformationNode> {
               ],
             ),
           ),
-          if (widget.onArgsChanged != null &&
-              widget.transformationName != "Nop") ...[
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 60,
-              child: TextField(
-                controller: _argController,
-                decoration: const InputDecoration(
-                  labelText: 'Arg',
-                  border: OutlineInputBorder(),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  final intValue = int.tryParse(value);
-                  if (intValue != null) {
-                    widget.onArgsChanged!([intValue]);
-                  }
-                },
-              ),
-            ),
-          ],
         ],
       ),
     );

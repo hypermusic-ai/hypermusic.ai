@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart'; // For hashing
 
 // Models
-import 'package:hypermusic/model/feature.dart';
-import 'package:hypermusic/model/running_instance.dart';
+import '../model/feature.dart';
+import '../model/running_instance.dart';
 
 // Constrollers
-import 'package:hypermusic/controller/data_interface_controller.dart';
+import 'data_interface.dart';
 
 Digest sha256FromString(String input) => sha256.convert(utf8.encode(input));
 
-class RegistryController implements DataInterfaceController 
+class Registry implements DataInterface 
 {
   // [featureName] = featureVersion
   final Map<String, Digest> _newestFeatureVersion = {};
@@ -51,6 +51,17 @@ class RegistryController implements DataInterfaceController
   }
 
   @override
+  Future<Digest?> containsFeature(Feature feature) async
+  {
+    if(_features.containsKey(feature.name) == false)return null;
+    for(Digest version in _features[feature.name]!.keys)
+    {
+      if(_features[feature.name]![version] == feature)return version;
+    }
+    return null;
+  }
+
+  @override
   Feature? getNewestFeature(String featureName)
   {
       return _features[featureName]?[_newestFeatureVersion[featureName]];
@@ -59,6 +70,7 @@ class RegistryController implements DataInterfaceController
   @override
   List<Feature> getFeatures(String featureName)
   {
+    if(_features[featureName] == null)return [];
     return _features[featureName]!.values.toList();
   }
 
@@ -181,7 +193,7 @@ class RegistryController implements DataInterfaceController
 
   //TODO implement Transformations
   @override
-  Future<List<String>> getAllTransformations() async {
+  Future<List<String>> getAllTransformationNames() async {
     return ['Add', 'Mul', 'Nop']; // Default transformations
   }
 }

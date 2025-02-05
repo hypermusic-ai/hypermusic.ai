@@ -1,11 +1,11 @@
+import 'model/transformation.dart';
 import 'model/feature.dart';
-import 'package:tuple/tuple.dart';
-
 import 'model/running_instance.dart';
-import 'package:hypermusic/controller/data_interface_controller.dart';
+
+import 'controller/data_interface.dart';
 
 class RegistryInitializer {
-  static Future<bool> initialize(DataInterfaceController registry) async
+  static Future<bool> initialize(DataInterface registry) async
   {
     // Register scalar features
 
@@ -84,15 +84,15 @@ class RegistryInitializer {
             registry.getFeature("Time", timeVer)!,
         ],
         transformationsMap: {
-          'Pitch': [
-            Tuple2('Add', [1]),
-            Tuple2('Add', [2]),            
-            Tuple2('Add', [3]),
+          registry.getFeature("Pitch", pitchVer)!: [
+            Transformation(name:'Add', args:[1]),
+            Transformation(name:'Add', args:[2]),            
+            Transformation(name:'Add', args:[3]),
           ],
-          'Time': [
-            Tuple2('Add', [1]),
-            Tuple2('Add', [2]),
-            Tuple2('Nop', [])
+          registry.getFeature("Time", timeVer)!: [
+            Transformation(name:'Add', args:[1]),
+            Transformation(name:'Add', args:[2]),
+            Transformation(name:'Nop')
 
           ],
         },
@@ -120,15 +120,15 @@ class RegistryInitializer {
             registry.getFeature("FeatureA", featureAVer)!,
         ],
         transformationsMap: {
-          'Duration': [
-            Tuple2('Add', [5]),
-            Tuple2('Mul', [2]),            
-            Tuple2('Nop', []),
+          registry.getFeature("Duration", durationVer)!: [
+            Transformation(name: 'Add', args: [5]),
+            Transformation(name: 'Mul', args: [2]),            
+            Transformation(name: 'Nop'), // default empty list test
           ],
-          'FeatureA': [
-            Tuple2('Add', [5]),
-            Tuple2('Nop', []),            
-            Tuple2('Mul', [7]),            
+          registry.getFeature("FeatureA", featureAVer)!: [
+            Transformation(name: 'Add', args: [5]),
+            Transformation(name: 'Nop', args: []), // empty list test            
+            Transformation(name: 'Mul', args: [7]),            
           ],
         },
     ));

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 //Views
-import 'package:hypermusic/view/widgets/draggable/draggable_feature_item.dart';
+import '../draggable/draggable_feature_item.dart';
 
 // Controllers
-import 'package:hypermusic/controller/data_interface_controller.dart';
+import '../../../controller/data_interface.dart';
 
 class FeatureListPanel extends StatelessWidget {
-  final DataInterfaceController dataInterfaceController;
+  final DataInterface registry;
 
   const FeatureListPanel({
     super.key,
-    required this.dataInterfaceController,
+    required this.registry,
   });
 
   @override
@@ -41,14 +41,14 @@ class FeatureListPanel extends StatelessWidget {
           const Divider(height: 1),
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 200),
-            // asynchronous fetch feature names from dataInterfaceController 
+            // asynchronous fetch feature names from registry 
             child: FutureBuilder<List<String>>(
-              future: dataInterfaceController.getAllFeatureNames(),
+              future: registry.getAllFeatureNames(),
               builder: (context, snapshot) {
                 // still fetching...
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
-                } // handle error when connecting to dataInterfaceController
+                } // handle error when connecting to registry
                 else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } // when asynchronous operation completed, display features
@@ -60,7 +60,7 @@ class FeatureListPanel extends StatelessWidget {
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 2.0),
-                              child: DraggableFeatureItem(feature: dataInterfaceController.getNewestFeature(snapshot.data![index])!),
+                              child: DraggableFeatureItem(feature: registry.getNewestFeature(snapshot.data![index])!),
                       );
                     },
                   );

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
 // Views
-import 'package:hypermusic/view/widgets/left_side_panel/feature_list_panel.dart';
-import 'package:hypermusic/view/widgets/left_side_panel/transformation_list_panel.dart';
-import 'package:hypermusic/view/widgets/left_side_panel/condition_list_panel.dart';
+import 'feature_list_panel.dart';
+import 'transformation_list_panel.dart';
+import 'condition_list_panel.dart';
 
 // Controllers
-import 'package:hypermusic/controller/data_interface_controller.dart';
+import '../../../controller/data_interface.dart';
 
 class LeftSidePanel extends StatefulWidget {
 
-  final DataInterfaceController dataInterfaceController;
+  final DataInterface registry;
 
   const LeftSidePanel({
     super.key,
-    required this.dataInterfaceController,
+    required this.registry,
   });
 
   @override
@@ -33,15 +33,15 @@ class LeftSidePanelState extends State<LeftSidePanel> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FeatureListPanel(
-              dataInterfaceController: widget.dataInterfaceController,
+              registry: widget.registry,
             ),
             const SizedBox(height: 4),
             TransformationListPanel(
-              dataInterfaceController: widget.dataInterfaceController,
+              registry: widget.registry,
             ),
             const SizedBox(height: 4),
             ConditionListPanel(
-              dataInterfaceController: widget.dataInterfaceController,
+              registry: widget.registry,
             ),
           ],
         ),

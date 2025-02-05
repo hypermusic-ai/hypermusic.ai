@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 // Providers
 import 'package:provider/provider.dart';
-import 'package:hypermusic/providers/meta_mask_provider.dart';
+import '../../providers/meta_mask_provider.dart';
 
 // Views
-import 'package:hypermusic/view/widgets/top_nav_bar.dart';
+import '../widgets/top_nav_bar.dart';
 
 class ProfilePage extends StatelessWidget {
   @override

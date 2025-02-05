@@ -1,13 +1,15 @@
 import 'package:crypto/crypto.dart';
 
 // Models
-import 'package:hypermusic/model/feature.dart';
-import 'package:hypermusic/model/running_instance.dart';
+import '../model/feature.dart';
+import '../model/running_instance.dart';
 
-abstract class DataInterfaceController
+abstract class DataInterface
 {
   /// will return registered feature version
   Future<Digest?> registerFeature(Feature feature);
+  /// will return version if feature found
+  Future<Digest?> containsFeature(Feature feature);
   /// will return newest feature version
   Feature? getNewestFeature(String featureName);
   ///will return all feature versions for given name
@@ -22,6 +24,7 @@ abstract class DataInterfaceController
   Future<List<String>> getAllFeatureNames();
   /// will return all feature versions
   Future<List<Digest>> getAllFeatureVersions(String featureName);
+
 
   /// will return registered RI version
   Future<Digest?> registerRunningInstance(String featureName, Digest featureVersion, RunningInstance instance);
@@ -40,5 +43,5 @@ abstract class DataInterfaceController
 
   // TODO implement
   Future<List<String>> getAllConditions();
-  Future<List<String>> getAllTransformations();
+  Future<List<String>> getAllTransformationNames();
 }

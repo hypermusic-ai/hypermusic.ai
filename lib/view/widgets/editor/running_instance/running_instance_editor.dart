@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // Controllers
-import 'package:hypermusic/controller/running_instance_editor_controller.dart';
+import '../../../../controller/running_instance_editor_controller.dart';
 
 class RunningInstanceEditor extends StatefulWidget {
 

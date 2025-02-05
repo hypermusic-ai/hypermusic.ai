@@ -1,8 +1,24 @@
+import 'package:collection/collection.dart';
+
 class Transformation {
   final String name;
   final List<int> args;
 
   Transformation({required this.name, this.args = const []});
+
+  @override
+  int get hashCode => Object.hash(
+        name,
+        const ListEquality().hash(args),
+      );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! Transformation) return false;
+
+    return name == other.name && ListEquality().equals(args, other.args);
+  }
 
   int run(int x) {
     return switch (name) {

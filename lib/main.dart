@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+
+//Providers
 import 'providers/meta_mask_provider.dart';
 
-// Models
-
 // Views
-import 'package:hypermusic/view/pages/home_page.dart';
-import 'package:hypermusic/view/pages/edit_page.dart';
-import 'package:hypermusic/view/pages/explore_page.dart';
-import 'package:hypermusic/view/pages/trade_page.dart';
-import 'package:hypermusic/view/pages/profile_page.dart';
+import 'view/pages/home_page.dart';
+import 'view/pages/edit_page.dart';
+import 'view/pages/explore_page.dart';
+import 'view/pages/trade_page.dart';
+import 'view/pages/profile_page.dart';
 
 //Controllers
-import 'package:hypermusic/controller/data_interface_controller.dart';
-import 'package:hypermusic/controller/registry_controller.dart';
+import 'controller/data_interface.dart';
+import 'controller/registry.dart';
 
 import 'registry_initializer.dart';
 
-void fetchFeatures(DataInterfaceController registry) async {
+void fetchFeatures(DataInterface registry) async {
   final features = await registry.getAllFeatureNames();
   print("Features: $features");
   print("Test Build Web");
@@ -26,7 +26,7 @@ void fetchFeatures(DataInterfaceController registry) async {
 
 void main() async {
 
-  final DataInterfaceController registry = RegistryController();
+  final DataInterface registry = Registry();
 
   // Initialize the registry with default features and transformations
   await RegistryInitializer.initialize(registry);
@@ -35,7 +35,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        Provider<DataInterfaceController>.value(value: registry),
+        Provider<DataInterface>.value(value: registry),
         ChangeNotifierProvider(
           create: (_) => MetaMaskProvider()..start(),
         ),
@@ -69,8 +69,8 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/edit',
       routes: {
-        '/': (context) => HomePage(dataInterfaceController: Provider.of<DataInterfaceController>(context, listen: false)),
-        '/edit': (context) => EditPage(dataInterfaceController: Provider.of<DataInterfaceController>(context, listen: false),),
+        '/': (context) => HomePage(registry: Provider.of<DataInterface>(context, listen: false)),
+        '/edit': (context) => EditPage(registry: Provider.of<DataInterface>(context, listen: false),),
         '/explore': (context) => ExplorePage(),
         '/trade': (context) => TradePage(),
         '/profile': (context) => ProfilePage(),
