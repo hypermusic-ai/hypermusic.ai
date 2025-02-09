@@ -12,4 +12,10 @@ class TransformationEditorController extends ValueNotifier<Transformation>
       args: [],
     )
   );
+
+  void setArgs(List<int> args)
+  {
+    value.args = args;
+    notifyListeners();
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hypermusic/controller/feature_editor_controller.dart';
 
 //Views
 import '../pt_editor.dart';
@@ -14,9 +15,17 @@ class PTTreeEditor extends PTEditorBase {
 
 class _PTTreeEditorState extends State<PTTreeEditor> {
 
+  FeatureEditorController rootFeatureController = FeatureEditorController();
+
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    rootFeatureController.dispose();
+    super.dispose();
   }
 
   @override
@@ -33,7 +42,7 @@ class _PTTreeEditorState extends State<PTTreeEditor> {
                 Row(
                     children: [
                       Expanded(child: 
-                        PTTreeEditorNode(registry : widget.registry),
+                        PTTreeEditorNode(registry : widget.registry, featureController: rootFeatureController,),
                       )
                     ],
                   )

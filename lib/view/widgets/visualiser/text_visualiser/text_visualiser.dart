@@ -5,7 +5,7 @@ import '../pt_visualiser.dart';
 
 abstract class PTVisualiserBase extends StatefulWidget {
 
-  final PTEditorBase? editor;
+  //final PTEditorBase? editor;
 
-  const PTVisualiserBase({super.key, this.editor});
+  //const PTVisualiserBase({super.key, this.editor});
 }

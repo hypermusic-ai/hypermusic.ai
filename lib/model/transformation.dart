@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 
 class Transformation {
   final String name;
-  final List<int> args;
+  List<int> args;
 
   Transformation({required this.name, this.args = const []});
 
@@ -16,8 +16,16 @@ class Transformation {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! Transformation) return false;
-
+    bool eq = ListEquality().equals(args, other.args);
+    
     return name == other.name && ListEquality().equals(args, other.args);
+  }
+
+  Transformation copyWith({String? name, List<int>? args}) {
+    return Transformation(
+      name: name ?? this.name,
+      args: args ?? this.args,
+    );
   }
 
   int run(int x) {

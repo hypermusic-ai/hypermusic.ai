@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:collection/collection.dart';
 
 // Utils
@@ -8,13 +10,13 @@ import 'transformation.dart';
 
 class Feature 
 {
-  final String name;
+  String name;
   final String description;
   final List<Feature> composites;
   final Map<Feature, List<Transformation>> transformationsMap;
   final String condition;
 
-  const Feature({
+  Feature({
     required this.name,
     required this.description,
     required this.composites,
@@ -33,17 +35,18 @@ class Feature
   }
 
   Feature copyWith({String? name, String? description, List<Feature>? composites, Map<Feature, List<Transformation>>? transformationsMap, String? condition}) {
-  
+    developer.log('deppcopy feature ${this.name}', name: 'hypermusic.feature');
+
     List<Feature> compositesDeepCopy = [];
-    for (var key in (composites ?? this.composites)) {
-        compositesDeepCopy.add(key);
+    for (Feature key in (composites ?? this.composites)) {
+        compositesDeepCopy.add(key.copyWith());
     }
 
     Map<Feature, List<Transformation>> transformDeepCopy = {};
 
      (transformationsMap ?? this.transformationsMap).forEach((key, value) {
       // For each list in the map, create a new list with deep copies of the objects
-      transformDeepCopy[key] = value.map((transformation) {return transformation;}).toList();
+      transformDeepCopy[key] = value.map((transformation) {return transformation.copyWith();}).toList();
     });
 
     return Feature(

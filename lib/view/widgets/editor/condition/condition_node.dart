@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 
+import '../../../../controller/condition_editor_controller.dart';
+
 class ConditionNode extends StatelessWidget {
-  final String conditionName;
-  final VoidCallback onRemoveCondition;
+  final ConditionEditorController conditionController;
 
   const ConditionNode({
     super.key,
-    required this.conditionName,
-    required this.onRemoveCondition,
+    required this.conditionController
   });
+
+  void _onRemoveCondition()
+  {
+    //conditionController.removeCondition();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Since we're using Positioned.fill in FeatureNode,
-    // ConditionNode gets exactly nodeWidth x nodeHeight from parent.
-    return Material(
+    return Container(
       color: Colors.transparent,
       child: Container(
         decoration: BoxDecoration(
@@ -22,36 +25,28 @@ class ConditionNode extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           color: Colors.orange[50],
         ),
-        child: Stack(
+        child: Column(
           children: [
-            // Condition label at top center
-            Positioned(
-              top: 8,
-              left: 0,
-              right: 0,
-              child: Center(
+              Center(
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   color: Colors.orange,
                   child: Text(
-                    conditionName,
+                    conditionController.value.name,
                     style: const TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ),
               ),
-            ),
+
 
             // "x" button to remove condition in top right corner
-            Positioned(
-              top: 0,
-              right: 0,
-              child: IconButton(
+
+              IconButton(
                 icon: const Icon(Icons.close, size: 16),
                 color: Colors.red,
-                onPressed: onRemoveCondition,
+                onPressed: _onRemoveCondition,
               ),
-            ),
           ],
         ),
       ),
