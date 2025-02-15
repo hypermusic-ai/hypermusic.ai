@@ -1,0 +1,8 @@
+{
+    "name" : "Time",
+    "description" : "Time of the note",
+    "composites" : [],
+    "transformations" : [],
+    "runningInstances" : [],
+    "condition" : null
+}
