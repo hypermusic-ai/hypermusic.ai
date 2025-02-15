@@ -5,17 +5,19 @@ import '../model/transformation.dart';
 
 class TransformationEditorController extends ValueNotifier<Transformation>
 {
+  List<int> args = [];
+
   TransformationEditorController({Transformation? transformation}) 
   : super( transformation ?? 
-  Transformation(
-      name: "",
-      args: [],
-    )
+      Transformation(
+        name: "default",
+        function: (x, args) => x,
+      )
   );
 
   void setArgs(List<int> args)
   {
-    value.args = args;
+    this.args = args;
     notifyListeners();
   }
 }

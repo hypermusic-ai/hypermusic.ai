@@ -26,7 +26,7 @@ class _TransformationNodeState extends State<TransformationNode> {
 
   @override
   void initState() {
-    _argsController.text = widget.transformation.args.isNotEmpty ? widget.transformation.args[0].toString() : '';
+    _argsController.text = widget.transformationController.args.isNotEmpty ? widget.transformationController.args[0].toString() : '';
     
     super.initState();
   }
@@ -39,9 +39,9 @@ class _TransformationNodeState extends State<TransformationNode> {
   String _getTransformationDescription() {
     switch (widget.transformation.name) {
       case "Add":
-        return "Add ${widget.transformation.args.isNotEmpty ? widget.transformation.args[0] : 0} to index";
+        return "Add ${widget.transformationController.args.isNotEmpty ? widget.transformationController.args[0] : 0} to index";
       case "Mul":
-        return "Multiply index by ${widget.transformation.args.isNotEmpty ? widget.transformation.args[0] : 1}";
+        return "Multiply index by ${widget.transformationController.args.isNotEmpty ? widget.transformationController.args[0] : 1}";
       case "Nop":
         return "No operation (pass through)";
       default:

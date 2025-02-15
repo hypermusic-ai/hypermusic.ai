@@ -2,55 +2,49 @@ import 'package:collection/collection.dart';
 
 class Transformation {
   final String name;
-  List<int> args;
+  final String description;
+  final int argsCount;
+  final int Function(int, List<int>) function;
 
-  Transformation({required this.name, this.args = const []});
+  Transformation({
+    required this.name, 
+    required this.function,
+    this.description = '',
+    this.argsCount = 0,
+  });
 
   @override
-  int get hashCode => Object.hash(
-        name,
-        const ListEquality().hash(args),
-      );
+  int get hashCode => Object.hash(name, description, argsCount, function);
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other is! Transformation) return false;
-    bool eq = ListEquality().equals(args, other.args);
-    
-    return name == other.name && ListEquality().equals(args, other.args);
+    if (other is! Transformation) return false;    
+
+    return  name == other.name && 
+            function == other.function &&
+            argsCount == other.argsCount;
   }
 
-  Transformation copyWith({String? name, List<int>? args}) {
+  Transformation copyWith({String? name, int Function(int, List<int>)? function, int? argsCount}) {
     return Transformation(
       name: name ?? this.name,
-      args: args ?? this.args,
+      argsCount: argsCount ?? this.argsCount,
+      function: function ?? this.function,
     );
-  }
-
-  int run(int x) {
-    return switch (name) {
-      'Add' => x + (args.isNotEmpty ? args[0] : 0),
-      'Mul' => x * (args.isNotEmpty ? args[0] : 1),
-      'Nop' => x,
-      _ => throw Exception('Unknown transformation: $name')
-    };
   }
 
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'argsCount': args.length,
-      'description': _getDescription(),
+      'description': description,
+      'argsCount': argsCount,
+      'function' : function
     };
   }
 
-  String _getDescription() {
-    return switch (name) {
-      'Add' => 'Adds a constant to the input index',
-      'Mul' => 'Multiplies the input index by a constant',
-      'Nop' => 'No operation',
-      _ => 'Unknown transformation'
-    };
+  int run(int x, List<int> args) {
+    assert(args.length == argsCount);
+    return function(x, args);
   }
 }

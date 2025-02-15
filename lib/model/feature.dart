@@ -1,27 +1,31 @@
 import 'dart:developer' as developer;
-
 import 'package:collection/collection.dart';
+import 'package:tuple/tuple.dart';
 
 // Utils
 import '../utils/multiset_comparison.dart';
 
 // Models
 import 'transformation.dart';
+import 'condition.dart';
+import 'running_instance.dart';
 
 class Feature 
 {
   String name;
   final String description;
   final List<Feature> composites;
-  final Map<Feature, List<Transformation>> transformationsMap;
-  final String condition;
+  final Map<Feature, List<Tuple2<Transformation, List<int>>>> transformations;
+  final Map<Feature, List<RunningInstance>> runningInstances;
+  final Condition? condition;
 
   Feature({
     required this.name,
     required this.description,
     required this.composites,
-    required this.transformationsMap,
-    this.condition = 'true',
+    required this.transformations,
+    required this.runningInstances,
+    required this.condition,
   });
 
   Map<String, dynamic> toJson() {
@@ -29,12 +33,33 @@ class Feature
       'name': name,
       'description': description,
       'composites': composites,
-      'transformationsMap': transformationsMap,
+      'transformations': transformations,
+      'runningInstances': runningInstances,
       'condition': condition,
     };
   }
 
-  Feature copyWith({String? name, String? description, List<Feature>? composites, Map<Feature, List<Transformation>>? transformationsMap, String? condition}) {
+  /// Create Feature object from JSON
+  factory Feature.fromJson(Map<String, dynamic> json) {
+     return Feature(
+      name: json['name'],
+      description: json['description'],
+      composites: json['composites'],
+      transformations: json['transformations'],
+      runningInstances: json['runningInstances'],
+      condition: json['condition'],
+    );
+  }
+
+  Feature copyWith({
+      String? name,
+      String? description,
+      List<Feature>? composites,
+      Map<Feature, List<Tuple2<Transformation, List<int>>>>? transformations,
+      Map<Feature, List<RunningInstance>>?  runningInstances,
+      Condition? condition
+     }) 
+  {
     developer.log('deppcopy feature ${this.name}', name: 'hypermusic.feature');
 
     List<Feature> compositesDeepCopy = [];
@@ -42,19 +67,23 @@ class Feature
         compositesDeepCopy.add(key.copyWith());
     }
 
-    Map<Feature, List<Transformation>> transformDeepCopy = {};
+    // Map<Feature, Map<Transformation, List<dynamic>>> transformDeepCopy = {};
+    //  (transformations ?? this.transformations).forEach((key, value) {
+    //   transformDeepCopy[key] = value.map((transformation) {return transformation.copyWith();}).toList();
+    // });
 
-     (transformationsMap ?? this.transformationsMap).forEach((key, value) {
-      // For each list in the map, create a new list with deep copies of the objects
-      transformDeepCopy[key] = value.map((transformation) {return transformation.copyWith();}).toList();
+    Map<Feature, List<RunningInstance>> runningInstancesDeepCopy = {};
+     (runningInstances ?? this.runningInstances).forEach((key, value) {
+      runningInstancesDeepCopy[key] = value.map((runningInstance) {return runningInstance.copyWith();}).toList();
     });
 
     return Feature(
       name: name ?? this.name,
       description: description ?? this.description,
       composites: compositesDeepCopy,
-      transformationsMap: transformDeepCopy,
-      condition: condition ?? this.condition,
+      transformations: transformations ?? this.transformations,
+      condition: condition ?? this.condition?.copyWith(),
+      runningInstances: runningInstancesDeepCopy,
     );
   }
 
@@ -66,7 +95,7 @@ class Feature
     return name == other.name &&
         description == other.description &&
         areListsEqualMultiset(composites, other.composites) &&
-        const DeepCollectionEquality().equals(transformationsMap, other.transformationsMap) &&
+        const DeepCollectionEquality().equals(transformations, other.transformations) &&
         condition == other.condition;
   }
 
@@ -75,7 +104,7 @@ class Feature
         name,
         description,
         const ListEquality().hash(composites),
-        const DeepCollectionEquality().hash(transformationsMap),
+        const DeepCollectionEquality().hash(transformations),
         condition,
       );
 
@@ -88,33 +117,20 @@ class Feature
     return composites.length + composites.fold(0, (sum, composite) => sum + composite.getSubTreeSize());
   }
 
-  bool checkCondition() {
-    // For now, only support 'true' and 'false' conditions
-    return condition == 'true';
+  bool checkCondition(List<dynamic> args) {
+    if(condition == null) return true;
+    return condition!.check(args);
   }
 
-  Map<String, dynamic> transform(int dimId, int opId, int x) {
+  int transform(int dimId, int opId, int index) {
 
     if (dimId >= composites.length) throw Exception('Invalid dimension id');
 
-    final subFeature = composites[dimId];
-    final transformations = transformationsMap[subFeature] ?? [];
-    if (transformations.isEmpty) return {'value': x};
+    final List<Tuple2<Transformation, List<int>>> transformationList = transformations[composites[dimId]] ?? [];
+    if (transformationList.isEmpty) return index;
 
-    final actualOpId = opId % transformations.length;
-    final transformation = transformations[actualOpId];
+    opId = opId % transformationList.length;
 
-    final name = transformation.name;
-    if (name == 'Add') {
-      final args = transformation.args;
-      return {'value': x + args[0]};
-    } else if (name == 'Mul') {
-      final args = transformation.args;
-      return {'value': x * args[0]};
-    } else if (name == 'Nop') {
-      return {'value': x};
-    }
-
-    return {'value': x}; // Default no-op
+    return transformationList[opId].item1.run(index, transformationList[opId].item2);
   }
 }

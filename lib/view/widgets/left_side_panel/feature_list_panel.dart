@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+// Models
+import '../../../model/feature.dart';
+
 //Views
 import '../draggable/draggable_feature_item.dart';
 
@@ -44,24 +47,36 @@ class FeatureListPanel extends StatelessWidget {
             // asynchronous fetch feature names from registry 
             child: FutureBuilder<List<String>>(
               future: registry.getAllFeatureNames(),
-              builder: (context, snapshot) {
+              builder: (context, nameListSnapshot) {
                 // still fetching...
-                if (snapshot.connectionState == ConnectionState.waiting) {
+                if (nameListSnapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } // handle error when connecting to registry
-                else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                else if (nameListSnapshot.hasError) {
+                  return Center(child: Text('Error: ${nameListSnapshot.error}'));
                 } // when asynchronous operation completed, display features
                 else {
                   return ListView.builder(
                           shrinkWrap: true,
                           padding: const EdgeInsets.all(4.0),
-                          itemCount: snapshot.data!.length,
+                          itemCount: nameListSnapshot.data!.length,
                           itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 2.0),
-                              child: DraggableFeatureItem(feature: registry.getNewestFeature(snapshot.data![index])!),
-                      );
+                            
+                            return FutureBuilder<Feature?>(
+                              future: registry.getNewestFeature(nameListSnapshot.data![index]),
+                              builder: (context, featureSnapshot) {
+                                if (featureSnapshot.connectionState == ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                } else if (featureSnapshot.hasError) {
+                                  return Text('Error: ${featureSnapshot.error}');
+                                } else {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                    child: DraggableFeatureItem(feature: featureSnapshot.data!),
+                                  );
+                                }
+                              },
+                            );
                     },
                   );
                 }

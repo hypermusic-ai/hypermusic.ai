@@ -3,8 +3,9 @@ import 'package:crypto/crypto.dart';
 import 'dart:developer' as developer;
 
 // Models
-import '../../../../model/feature.dart'; // todo - zrobić bridge żeby nie było modeli w view ( controller?)
-import '../../../../model/transformation.dart'; // todo 
+import '../../../../model/version.dart';
+import '../../../../model/feature.dart';
+import '../../../../model/transformation.dart';
 
 // Views
 import '../pt_editor_node.dart';
@@ -37,11 +38,8 @@ class _PTTreeEditorNodeState extends State<PTTreeEditorNode> {
   List<PTTreeEditorNode> childrenWidgets = [];
   Map<FeatureEditorController, List<TransformationNode>> transformationWidgets = {};
 
-  final RunningInstanceEditorController _runningInstanceEditorController = RunningInstanceEditorController();
-  final ConditionEditorController _conditionEditorController = ConditionEditorController();
-
   final TextEditingController _nameController = TextEditingController();
-  final ValueNotifier<Digest?> _versionController = ValueNotifier<Digest?>(null);
+  final ValueNotifier<Version<Feature>?> _featureVersionController = ValueNotifier<Version<Feature>?>(null);
   final ValueNotifier<bool> _highlightedController = ValueNotifier<bool>(false);
   
   bool _isExpanded = false;
@@ -54,11 +52,8 @@ class _PTTreeEditorNodeState extends State<PTTreeEditorNode> {
     developer.log("${widget.featureController.value.name} dispose", name: 'hypermusic.app.pt_editor_node');
 
     _nameController.dispose();
-    _versionController.dispose();
+    _featureVersionController.dispose();
     _highlightedController.dispose();
-
-    _runningInstanceEditorController.dispose();
-    _conditionEditorController.dispose();
 
     widget.featureController.removeListener(_onFeatureChanged);
 
@@ -88,8 +83,8 @@ class _PTTreeEditorNodeState extends State<PTTreeEditorNode> {
 
   void advancedVersionTest() async
   {
-    _versionController.value = await widget.registry.containsFeature(widget.featureController.value);
-    developer.log("${widget.featureController.value.name} v.${_versionController.value} _advancedEqualityTest", name: 'hypermusic.app.pt_editor_node');
+    _featureVersionController.value = await widget.registry.containsFeature(widget.featureController.value);
+    developer.log("${widget.featureController.value.name} v.${_featureVersionController.value} _advancedEqualityTest", name: 'hypermusic.app.pt_editor_node');
   }
 
   void _buildChildren() {
@@ -109,7 +104,7 @@ class _PTTreeEditorNodeState extends State<PTTreeEditorNode> {
         ));
 
         transformationWidgets[compositeController] = [];
-        for(int transformIndex = 0; transformIndex < (widget.featureController.value.transformationsMap[compositeController.value] ?? []).length; transformIndex++)
+        for(int transformIndex = 0; transformIndex < (widget.featureController.value.transformations[compositeController.value] ?? []).length; transformIndex++)
         {
           TransformationEditorController transformationController =  widget.featureController.transformationControllers[compositeController.value]![transformIndex];
           transformationWidgets[compositeController]!.add(
@@ -312,15 +307,15 @@ class _PTTreeEditorNodeState extends State<PTTreeEditorNode> {
           ),
         ),
 
-        ValueListenableBuilder<Digest?>(
-            builder: (BuildContext context, Digest? version, Widget? child) {
+        ValueListenableBuilder<Version<Feature>?>(
+            builder: (BuildContext context, Version<Feature>? version, Widget? child) {
                 if(version == null)return Container();
                 return Expanded( child:
                         LayoutBuilder( 
                         builder: (context, constraints) {
                           double width = constraints.maxWidth < 128.0 ? constraints.maxWidth : 128.0;
                           int maxChars = (width / 9).floor(); // 9px per character approximation
-                          String displayText = version.toString();
+                          String displayText = version.hash.toString();
                           if (displayText.length > maxChars) {
                             displayText = '${displayText.substring(0, maxChars > 3 ? maxChars - 3 : 0)}...';
                           }
@@ -337,7 +332,7 @@ class _PTTreeEditorNodeState extends State<PTTreeEditorNode> {
                         )
                 );
               },
-            valueListenable: _versionController,
+            valueListenable: _featureVersionController,
         ),
         Row( children: [
         Padding(
@@ -383,8 +378,8 @@ class _PTTreeEditorNodeState extends State<PTTreeEditorNode> {
       if (_showDetails) FeatureDetailsEditor(featureEditorController: widget.featureController),
       if (_showRunningInstance) ...
       [
-        RunningInstanceEditor(runningInstanceEditorController: _runningInstanceEditorController),
-        ConditionNode(conditionController: _conditionEditorController),
+        RunningInstanceEditor(runningInstanceEditorController: widget.featureController.runningInstanceController),
+        ConditionNode(conditionController: widget.featureController.conditionController),
       ],
       if (_isExpanded) _buildExpanded(context),
     ]);

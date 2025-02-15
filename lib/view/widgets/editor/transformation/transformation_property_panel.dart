@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import '../../../../model/transformation.dart';
+
+//Controllers
+import '../../../../controller/transformation_editor_controller.dart';
 
 class TransformationPropertyPanel extends StatefulWidget {
-  final Transformation transformation;
-  final void Function(Transformation updatedTransformation) onApply;
-  final VoidCallback onCancel;
+
+  final TransformationEditorController transformationController;
 
   const TransformationPropertyPanel({
     super.key,
-    required this.transformation,
-    required this.onApply,
-    required this.onCancel,
+    required this.transformationController,
   });
 
   @override
@@ -26,10 +25,17 @@ class _TransformationPropertyPanelState
   void initState() {
     super.initState();
     // Assume the first arg is an integer
-    final arg = widget.transformation.args.isNotEmpty
-        ? widget.transformation.args[0]
+    final arg = widget.transformationController.args.isNotEmpty
+        ? widget.transformationController.args[0]
         : 0;
     _argController = TextEditingController(text: arg.toString());
+  }
+
+  @override
+  void dispose()
+  {
+    _argController.dispose();
+    super.dispose();
   }
 
   @override
@@ -44,7 +50,7 @@ class _TransformationPropertyPanelState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Edit ${widget.transformation.name}'),
+            Text('Edit ${widget.transformationController.value.name}'),
             const SizedBox(height: 8),
             // Text field to edit the first argument
             TextField(
@@ -58,25 +64,7 @@ class _TransformationPropertyPanelState
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    widget.onCancel();
-                  },
-                  child: const Text('Cancel'),
-                ),
                 const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () {
-                    // Parse the argument
-                    final argValue = int.tryParse(_argController.text) ?? 0;
-                    final updatedTransformation = Transformation(
-                      name : widget.transformation.name,
-                      args: [argValue],
-                    );
-                    widget.onApply(updatedTransformation);
-                  },
-                  child: const Text('Apply'),
-                ),
               ],
             ),
           ],

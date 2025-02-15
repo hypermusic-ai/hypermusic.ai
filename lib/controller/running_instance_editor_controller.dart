@@ -10,7 +10,7 @@ class RunningInstanceEditorController extends ValueNotifier<RunningInstance>
       startPoint: 0,
       howManyValues: 0,
       transformationStartIndex: 0,
-      transformationEndIndex: 0,
+      transformationSkipCount: 0,
     )
   );
 }

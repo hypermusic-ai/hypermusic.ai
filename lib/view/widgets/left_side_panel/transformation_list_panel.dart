@@ -45,12 +45,12 @@ class TransformationListPanel extends StatelessWidget {
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 200),
             child: FutureBuilder<List<String>>(
-              future: registry.getAllTransformationNames(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
+              future: registry.getAllTransformationsNames(),
+              builder: (context, nameListSnapshot) {
+                if (nameListSnapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                if (!snapshot.hasData) {
+                if (!nameListSnapshot.hasData) {
                   return const Center(
                     child: Text(
                       'No transformations available',
@@ -61,16 +61,29 @@ class TransformationListPanel extends StatelessWidget {
                 return ListView.builder(
                   shrinkWrap: true,
                   padding: const EdgeInsets.all(4.0),
-                  itemCount: snapshot.data!.length,
+                  itemCount: nameListSnapshot.data!.length,
                   itemBuilder: (context, index) {
-                    final transformationName = snapshot.data![index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2.0),
-                      child: DraggableTransformationItem(
-                        transformation: Transformation( 
-                          name: transformationName,
-                        ),
-                      ),
+                    return FutureBuilder<Transformation?>(
+                      future: registry.getNewestTransformation(nameListSnapshot.data![index]),
+                      builder: (context, transformationSnapshot) {
+                        if (transformationSnapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (!transformationSnapshot.hasData) {
+                          return const Center(
+                            child: Text(
+                              'No transformation available',
+                              style: TextStyle(fontSize: 11),
+                            ),
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                          child: DraggableTransformationItem(
+                            transformation: transformationSnapshot.data!,
+                          ),
+                        );
+                      },
                     );
                   },
                 );

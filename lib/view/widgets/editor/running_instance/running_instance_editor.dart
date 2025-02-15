@@ -17,7 +17,7 @@ class _RunningInstanceEditorState extends State<RunningInstanceEditor> {
 
   late TextEditingController _startPointController;
   late TextEditingController _transformationStartIndexController;
-  late TextEditingController _transformationEndIndexController;
+  late TextEditingController _transformationSkipCountController;
 
   @override
   void initState() {
@@ -27,7 +27,7 @@ class _RunningInstanceEditorState extends State<RunningInstanceEditor> {
 
     _startPointController = TextEditingController(text: runningInstance.startPoint.toString());
     _transformationStartIndexController = TextEditingController(text: runningInstance.transformationStartIndex.toString());
-    _transformationEndIndexController = TextEditingController(text: runningInstance.transformationEndIndex.toString());
+    _transformationSkipCountController = TextEditingController(text: runningInstance.transformationSkipCount.toString());
 
 
     _startPointController.addListener(  
@@ -38,8 +38,8 @@ class _RunningInstanceEditorState extends State<RunningInstanceEditor> {
       () => runningInstance.copyWith(transformationStartIndex: int.tryParse(_transformationStartIndexController.text) ?? 0)
     );
 
-    _transformationEndIndexController.addListener(
-      () => runningInstance.copyWith(transformationEndIndex: int.tryParse(_transformationEndIndexController.text) ?? 0)
+    _transformationSkipCountController.addListener(
+      () => runningInstance.copyWith(transformationSkipCount: int.tryParse(_transformationSkipCountController.text) ?? 0)
     );
   }
 
@@ -47,7 +47,7 @@ class _RunningInstanceEditorState extends State<RunningInstanceEditor> {
   void dispose() {
     _startPointController.dispose();
     _transformationStartIndexController.dispose();
-    _transformationEndIndexController.dispose();
+    _transformationSkipCountController.dispose();
     super.dispose();
   }
 
@@ -92,7 +92,7 @@ class _RunningInstanceEditorState extends State<RunningInstanceEditor> {
               children: [ 
                 Padding(
                   padding: const EdgeInsets.all(4.0),
-                  child:             const Text('Transformation range: ', style: TextStyle(fontSize: 11),),
+                  child:             const Text('Transformation', style: TextStyle(fontSize: 11),),
                 ),
                 Padding( padding: const EdgeInsets.all(4.0),
                 child:
@@ -120,11 +120,11 @@ class _RunningInstanceEditorState extends State<RunningInstanceEditor> {
                   width: 50,
                   height: 20,
                   child: TextField(
-                    controller: _transformationEndIndexController,
+                    controller: _transformationSkipCountController,
                     keyboardType: TextInputType.number,
                     style: TextStyle(fontSize: 11),
                     decoration: const InputDecoration(
-                      labelText: 'to',
+                      labelText: 'skip',
                       labelStyle: TextStyle(fontSize: 11),
                       contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 0), // Keep vertical padding minimal
                       border: OutlineInputBorder(

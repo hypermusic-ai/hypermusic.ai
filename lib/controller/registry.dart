@@ -1,60 +1,59 @@
-import 'dart:convert';
-
-import 'package:crypto/crypto.dart'; // For hashing
-
 // Models
+import '../model/version.dart';
 import '../model/feature.dart';
 import '../model/running_instance.dart';
+import '../model/condition.dart';
+import '../model/transformation.dart';
 
 // Constrollers
 import 'data_interface.dart';
 
-Digest sha256FromString(String input) => sha256.convert(utf8.encode(input));
-
 class Registry implements DataInterface 
 {
   // [featureName] = featureVersion
-  final Map<String, Digest> _newestFeatureVersion = {};
+  final Map<String, Version<Feature>> _newestFeatureVersion = {};
   // [featureName][featureVersion] = Feature
-  final Map<String, Map<Digest, Feature>> _features = {};
+  final Map<String, Map<Version<Feature>, Feature>> _features = {};
 
-  // [featureName][featureVersion] = riVersion
-  final Map<String, Map<Digest, Digest>> _newestrunningInstance = {};
-  // [featureName][featureVersion][riVersion]
-  final Map<String, Map<Digest, Map<Digest,RunningInstance>>> _runningInstances = {};
+  // [riVersion] = RunningInstance
+  final Map<Version<RunningInstance>,  RunningInstance> _runningInstances = {};
 
+  // [conditionName] = conditionVersion
+  final Map<String,  Version<Condition>> _newestCondition = {};
+  // [conditionName][conditionVersion] = Condition
+  final Map<String, Map<Version<Condition>, Condition>> _conditions = {};
+
+  // [transformationName] = transformationVersion
+  final Map<String, Version<Transformation>> _newestTransformation = {};
+  // [transformationName][transformationVersion] = Transformation
+  final Map<String, Map<Version<Transformation>, Transformation>> _transformations = {};
 
   @override
-  Future<Digest?> registerFeature(Feature feature) async
+  Future<Version<Feature>?> registerFeature(Feature feature) async
   {
     // construct new bucket
     if(_features.containsKey(feature.name) == false)
     {
       _features[feature.name] = {};
-      _newestrunningInstance[feature.name] = {};
-      _runningInstances[feature.name] = {};
     }
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final registrationId = sha256FromString('${feature.name}_$timestamp');
+    final registrationId = Version<Feature>(hash: sha256FromString('feature_${feature.name}_$timestamp'));
 
     assert(_features[feature.name]!.containsKey(registrationId) == false, "already contains ${feature.name} with version $registrationId");
     if(_features[feature.name]!.containsKey(registrationId))return null;
 
-
     _features[feature.name]![registrationId] = feature;
     _newestFeatureVersion[feature.name] = registrationId;
 
-    // construct empty map for running instances
-    _runningInstances[feature.name]![registrationId] = {};
     return registrationId;
   }
 
   @override
-  Future<Digest?> containsFeature(Feature feature) async
+  Future<Version<Feature>?> containsFeature(Feature feature) async
   {
     if(_features.containsKey(feature.name) == false)return null;
-    for(Digest version in _features[feature.name]!.keys)
+    for(Version<Feature> version in _features[feature.name]!.keys)
     {
       if(_features[feature.name]![version] == feature)return version;
     }
@@ -62,36 +61,22 @@ class Registry implements DataInterface
   }
 
   @override
-  Feature? getNewestFeature(String featureName)
+  Future<Feature?> getNewestFeature(String featureName) async
   {
       return _features[featureName]?[_newestFeatureVersion[featureName]];
   }
 
   @override
-  List<Feature> getFeatures(String featureName)
+  Future<List<Feature>> getAllFeatures(String featureName) async
   {
     if(_features[featureName] == null)return [];
     return _features[featureName]!.values.toList();
   }
 
   @override
-  Feature? getFeature(String featureName, Digest featureVersion)
+  Future<Feature?> getFeature(String featureName, Version<Feature> featureVersion) async
   {
     return _features[featureName]?[featureVersion];
-  }
-
-  @override
-  bool removeFeature(String featureName, Digest featureVersion)
-  {
-    if(_features.containsKey(featureName) == false)return false;
-    return _features[featureName]!.remove(featureVersion) != null;
-  }
-
-  @override
-  bool removeFeatures(String featureName)
-  {
-    if(_features.containsKey(featureName) == false)return false;
-    return _features.remove(featureName) != null;
   }
 
   @override
@@ -101,99 +86,184 @@ class Registry implements DataInterface
   }
 
   @override
-  Future<List<Digest>> getAllFeatureVersions(String featureName) async
+  Future<List<Version<Feature>>> getAllFeatureVersions(String featureName) async
   {
     if(_features.containsKey(featureName) == false)return [];
     return _features[featureName]!.keys.toList();
   }
 
   @override
-  Future<Digest?> registerRunningInstance(String featureName, Digest featureVersion, RunningInstance instance)async
+  Future<bool> removeFeature(String featureName, Version<Feature> featureVersion) async
   {
-    // bucket not exists
-    if(_features.containsKey(featureName) == false)return null;
-    if(_runningInstances.containsKey(featureName) == false)return null;
-    if(_newestrunningInstance.containsKey(featureName) == false)return null;
-    if(_runningInstances[featureName]!.containsKey(featureVersion) == false)return null;
+    if(_features.containsKey(featureName) == false)return false;
+    return _features[featureName]!.remove(featureVersion) != null;
+  }
 
+  @override
+  Future<bool> removeAllFeatureVersions(String featureName) async
+  {
+    if(_features.containsKey(featureName) == false)return false;
+    return _features.remove(featureName) != null;
+  }
+
+
+  @override
+  Future<Version<RunningInstance>?> registerRunningInstance(RunningInstance instance)async
+  {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final registrationId = sha256FromString('${featureName}_${featureVersion}_$timestamp');
+    final registrationId = Version<RunningInstance>(hash: sha256FromString('running_instance_$timestamp'));
 
-    assert(_runningInstances[featureName]![featureVersion]!.containsKey(registrationId) == false, "already contains this version");
-    if(_runningInstances[featureName]![featureVersion]!.containsKey(registrationId))return null;
-
-    _runningInstances[featureName]![featureVersion]![registrationId] = instance;
-    _newestrunningInstance[featureName]![featureVersion] = registrationId;
+    _runningInstances[registrationId] = instance;
 
     return registrationId;
   }
 
   @override
-  RunningInstance? getNewestRunningInstance(String featureName, Digest featureVersion)
+  Future<RunningInstance?> getRunningInstance(Version<RunningInstance> riVersion) async
   {
-    if(_features.containsKey(featureName) == false)return null;
-    if(_runningInstances.containsKey(featureName) == false)return null;
-    if(_newestrunningInstance.containsKey(featureName) == false)return null;
-    if(_runningInstances[featureName]!.containsKey(featureVersion) == false)return null;
-    return _runningInstances[featureName]![featureVersion]![_newestrunningInstance[featureName]![featureVersion]];
+    if(_runningInstances.containsKey(riVersion) == false)return null;
+    return _runningInstances[riVersion];
   }
 
   @override
-  List<RunningInstance> getRunningInstances(String featureName, Digest featureVersion)
+  Future<bool> removeRunningInstance(Version<RunningInstance> riVersion) async
   {
-    if(_features.containsKey(featureName) == false)return [];
-    if(_runningInstances.containsKey(featureName) == false)return [];
-    if(_runningInstances[featureName]!.containsKey(featureVersion) == false)return [];
-    return _runningInstances[featureName]![featureVersion]!.values.toList();
+    if(_runningInstances.containsKey(riVersion) == false)return false;
+    return _runningInstances.remove(riVersion) != null;
   }
 
   @override
-  RunningInstance? getRunningInstance(String featureName, Digest featureVersion, Digest riVersion)
+  Future<Version<Condition>?> registerCondition(Condition condition) async
   {
-    if(_features.containsKey(featureName) == false)return null;
-    if(_runningInstances.containsKey(featureName) == false)return null;
-    if(_runningInstances[featureName]!.containsKey(featureVersion) == false)return null;
-    return _runningInstances[featureName]![featureVersion]![riVersion];
+    // construct new bucket
+    if(_conditions.containsKey(condition.name) == false)
+    {
+      _conditions[condition.name] = {};
+    }
+
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final registrationId = Version<Condition>(hash: sha256FromString('condition_${condition.name}_$timestamp'));
+
+    assert(_conditions[condition.name]!.containsKey(registrationId) == false, "already contains ${condition.name} with version $registrationId");
+    if(_conditions[condition.name]!.containsKey(registrationId))return null;
+
+    _conditions[condition.name]![registrationId] = condition;
+    _newestCondition[condition.name] = registrationId;
+
+    return registrationId;
   }
 
   @override
-  bool removeRunningInstance(String featureName, Digest featureVersion, Digest riVersion)
+  Future<Condition?> getCondition(String conditionName, Version<Condition> conditionVersion) async
   {
-    if(_features.containsKey(featureName) == false)return false;
-    if(_runningInstances.containsKey(featureName) == false)return false;
-    if(_runningInstances[featureName]!.containsKey(featureVersion) == false)return false;
-    return _runningInstances[featureName]![featureVersion]!.remove(riVersion) != null;
+    return _conditions[conditionName]?[conditionVersion];
   }
 
   @override
-  bool removeRunningInstances(String featureName, Digest featureVersion)
+  Future<Condition?> getNewestCondition(String conditionName) async
   {
-    if(_features.containsKey(featureName) == false)return false;
-    if(_runningInstances.containsKey(featureName) == false)return false;
-    return _runningInstances[featureName]!.remove(featureVersion) != null;
+      return _conditions[conditionName]?[_newestCondition[conditionName]];
   }
-
+  
   @override
-  Future<List<Digest>> getAllRunningInstances(String featureName, Digest featureVersion) async
+  Future<List<String>> getAllConditionsNames() async
   {
-    if(_features.containsKey(featureName) == false)return [];
-    if(_runningInstances.containsKey(featureName) == false)return [];
-    if(_runningInstances[featureName]!.containsKey(featureVersion) == false)return [];
-    return _runningInstances[featureName]![featureVersion]!.keys.toList();
+    return _conditions.keys.toList();
+  }
+
+  @override
+  Future<List<Condition>> getAllConditions(String conditionName) async
+  {
+    if(_conditions[conditionName] == null)return [];
+    return _conditions[conditionName]!.values.toList();
+  }
+
+  @override
+  Future<List<Version<Condition>>> getAllConditionVersions(String conditionName) async
+  {
+    if(_conditions.containsKey(conditionName) == false)return [];
+    return _conditions[conditionName]!.keys.toList();
+  }
+
+  @override
+  Future<bool> removeCondition(String conditionName, Version<Condition> conditionVersion) async
+  {
+    if(_conditions.containsKey(conditionName) == false)return false;
+    return _conditions[conditionName]!.remove(conditionVersion) != null;
+  }
+
+  @override
+  Future<bool> removeAllConditionVersions(String conditionName) async
+  {
+    if(_conditions.containsKey(conditionName) == false)return false;
+    return _conditions.remove(conditionName) != null;
   }
 
 
-
-
-  //TODO implement Conditions
   @override
-  Future<List<String>> getAllConditions() async {
-    return ['true', 'false', 'Counter']; // Default conditions
+  Future<Version<Transformation>?> registerTransformation(Transformation transformation) async
+  {
+    // construct new bucket
+    if(_transformations.containsKey(transformation.name) == false)
+    {
+      _transformations[transformation.name] = {};
+    }
+
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final registrationId = Version<Transformation>(hash: sha256FromString('transformation_${transformation.name}_$timestamp'));
+
+    assert(_transformations[transformation.name]!.containsKey(registrationId) == false, "already contains ${transformation.name} with version $registrationId");
+    if(_transformations[transformation.name]!.containsKey(registrationId))return null;
+
+    _transformations[transformation.name]![registrationId] = transformation;
+    _newestTransformation[transformation.name] = registrationId;
+
+    return registrationId;
   }
 
-  //TODO implement Transformations
   @override
-  Future<List<String>> getAllTransformationNames() async {
-    return ['Add', 'Mul', 'Nop']; // Default transformations
+  Future<Transformation?> getTransformation(String transformationName, Version<Transformation> transformationVersion) async
+  {
+    return _transformations[transformationName]?[transformationVersion];
+  }
+
+  @override
+  Future<Transformation?> getNewestTransformation(String transformationName) async
+  {
+    return _transformations[transformationName]?[_newestTransformation[transformationName]];
+  }
+
+  @override
+  Future<List<Transformation>> getAllTransformations(String transformationName) async
+  {
+    if(_transformations[transformationName] == null)return [];
+    return _transformations[transformationName]!.values.toList();
+  }
+
+  @override
+  Future<List<Version<Transformation>>> getAllTransformationVersions(String transformationName) async
+  {
+    if(_transformations.containsKey(transformationName) == false)return [];
+    return _transformations[transformationName]!.keys.toList();
+  }
+
+  @override
+  Future<List<String>> getAllTransformationsNames() async
+  {
+    return _transformations.keys.toList();
+  }
+
+  @override
+  Future<bool> removeTransformation(String transformationName, Version<Transformation> transformationVersion) async
+  {
+    if(_transformations.containsKey(transformationName) == false)return false;
+    return _transformations[transformationName]!.remove(transformationVersion) != null;
+  }
+
+  @override
+  Future<bool> removeAllTransformationVersions(String transformationName) async
+  {
+    if(_transformations.containsKey(transformationName) == false)return false;
+    return _transformations.remove(transformationName) != null;
   }
 }

@@ -1,5 +1,7 @@
 // Models
+import '../model/version.dart';
 import '../model/feature.dart';
+import '../model/running_instance.dart';
 
 // Controllers
 import 'data_interface.dart';
@@ -16,26 +18,34 @@ class Runner {
 
   Runner({required this.registry});
 
-  List<List<int>> gen(String featureName, int N, List<int> startingPoints) {
-    final feature = registry.getNewestFeature(featureName);
-
+  Future<List<List<int>>> gen(String featureName, Version<RunningInstance> runningInstanceVersion, {List<dynamic> conditionArgs = const []}) async 
+  {
+    final feature = await registry.getNewestFeature(featureName);
     if (feature == null) {
       throw Exception('Feature $featureName not found');
     }
 
-    if (!feature.checkCondition()) {
+    final runningInstance = await registry.getRunningInstance(runningInstanceVersion);
+    if (runningInstance == null) {
+      throw Exception('RunningInstance $runningInstanceVersion not found');
+    }
+
+    if (!feature.checkCondition(conditionArgs)) {
       throw Exception('Feature condition not met');
     }
 
+    final N = runningInstance.howManyValues ?? 0;
     final numberOfScalars = feature.getScalarsCount();
     final samplesBuffer = List<List<int>>.generate(
       numberOfScalars,
       (_) => List<int>.filled(N, 0),
     );
 
+    
+
     final indexes = List<int>.generate(
-        N, (i) => i + (startingPoints.isNotEmpty ? startingPoints[0] : 0));
-    _decompose(feature, startingPoints, 1, indexes, 0, samplesBuffer);
+        N, (i) => i + (runningInstance.startPoint ?? 0));
+    _decompose(feature, [(runningInstance.startPoint ?? 0)], 1, indexes, 0, samplesBuffer);
 
     return samplesBuffer;
   }
@@ -47,12 +57,13 @@ class Runner {
     List<int> indexes,
     int dest,
     List<List<int>> outBuffer,
+    {List<dynamic> conditionArgs = const []}
   ) {
     if (dest >= outBuffer.length) {
       throw Exception('Buffer too small');
     }
 
-    if (!feature.checkCondition()) {
+    if (!feature.checkCondition(conditionArgs)) {
       throw Exception('Feature condition not met');
     }
 
@@ -97,11 +108,9 @@ class Runner {
 
     final space = List<int>.filled(N, 0);
     var x = start;
-
     for (var opId = 0; opId < N; opId++) {
       space[opId] = x;
-      final result = feature.transform(dimId, opId, x);
-      x = result['value'] as int;
+      x = feature.transform(dimId, opId, x);
     }
 
     return space;

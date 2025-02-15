@@ -9,6 +9,7 @@ class ConditionEditorController extends ValueNotifier<Condition>
     Condition(
       name: "",
       description: "",
+      checkFunction: (args) => true
     )
   );
 }

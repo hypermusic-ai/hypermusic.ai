@@ -14,7 +14,7 @@ abstract class PTEditorNodeBase extends StatefulWidget
   PTEditorNodeBase({
     super.key,
     required this.registry,
-    required this.featureController
+    required this.featureController,
   });
 
 }

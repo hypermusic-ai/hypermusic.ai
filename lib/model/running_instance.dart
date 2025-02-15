@@ -1,14 +1,14 @@
 class RunningInstance {
-  final int startPoint;
-  final int howManyValues;
-  final int transformationStartIndex;
-  final int transformationEndIndex;
+  final int? startPoint;
+  final int? howManyValues;
+  final int? transformationStartIndex;
+  final int? transformationSkipCount;
 
   const RunningInstance({
-    required this.startPoint,
-    required this.howManyValues,
-    required this.transformationStartIndex,
-    required this.transformationEndIndex,
+    this.startPoint = 0,
+    this.howManyValues,
+    this.transformationStartIndex,
+    this.transformationSkipCount,
   });
 
   Map<String, dynamic> toJson(RunningInstance instance) {
@@ -16,16 +16,16 @@ class RunningInstance {
       'startPoint': instance.startPoint,
       'howManyValues': instance.howManyValues,
       'transformationStartIndex': instance.transformationStartIndex,
-      'transformationEndIndex': instance.transformationEndIndex,
+      'transformationSkipCount': instance.transformationSkipCount,
     };
   }
 
-  RunningInstance copyWith({int? startPoint, int? howManyValues, int? transformationStartIndex, int? transformationEndIndex}) {
+  RunningInstance copyWith({int? startPoint, int? howManyValues, int? transformationStartIndex, int? transformationSkipCount}) {
     return RunningInstance(
       startPoint: startPoint ?? this.startPoint,
       howManyValues: howManyValues ?? this.howManyValues,
       transformationStartIndex: transformationStartIndex ?? this.transformationStartIndex,
-      transformationEndIndex: transformationEndIndex ?? this.transformationEndIndex,
+      transformationSkipCount: transformationSkipCount ?? this.transformationSkipCount,
     );
   }
 }

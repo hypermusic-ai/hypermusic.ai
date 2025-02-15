@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hypermusic/controller/feature_editor_controller.dart';
 
 //Views
 import '../pt_editor.dart';
 import 'pt_tree_editor_node.dart';
 
+import '../../../../controller/feature_editor_controller.dart';
 
 class PTTreeEditor extends PTEditorBase {
   const PTTreeEditor({super.key, required super.registry});
@@ -42,7 +42,10 @@ class _PTTreeEditorState extends State<PTTreeEditor> {
                 Row(
                     children: [
                       Expanded(child: 
-                        PTTreeEditorNode(registry : widget.registry, featureController: rootFeatureController,),
+                        PTTreeEditorNode(
+                          registry : widget.registry,
+                          featureController: rootFeatureController,
+                        ),
                       )
                     ],
                   )

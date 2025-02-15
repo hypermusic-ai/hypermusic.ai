@@ -45,12 +45,12 @@ class ConditionListPanel extends StatelessWidget {
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 200),
             child: FutureBuilder<List<String>>(
-              future: registry.getAllConditions(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
+              future: registry.getAllConditionsNames(),
+              builder: (context, nameListSnapshot) {
+                if (nameListSnapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                if (!snapshot.hasData) {
+                if (!nameListSnapshot.hasData) {
                   return const Center(
                     child: Text(
                       'No conditions available',
@@ -61,18 +61,30 @@ class ConditionListPanel extends StatelessWidget {
                 return ListView.builder(
                   shrinkWrap: true,
                   padding: const EdgeInsets.all(4.0),
-                  itemCount: snapshot.data!.length,
+                  itemCount: nameListSnapshot.data!.length,
                   itemBuilder: (context, index) {
-                    final conditionName = snapshot.data![index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2.0),
-                      child: DraggableConditionItem(
-                        condition: Condition(
-                          name: conditionName,
-                          description:
-                              '', // Empty description as it's not shown in UI
-                        ),
-                      ),
+
+                  return FutureBuilder<Condition?>(
+                      future: registry.getNewestCondition(nameListSnapshot.data![index]),
+                      builder: (context, conditionSnapshot) {
+                        if (conditionSnapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (!conditionSnapshot.hasData) {
+                          return const Center(
+                            child: Text(
+                              'No conditions available',
+                              style: TextStyle(fontSize: 11),
+                            ),
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                          child: DraggableConditionItem(
+                            condition: conditionSnapshot.data!,
+                          ),
+                        );
+                      },
                     );
                   },
                 );
