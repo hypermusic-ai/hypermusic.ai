@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+//Model
+import '../../../../model/transformation.dart';
+
 //Controllers
 import '../../../../controller/transformation_editor_controller.dart';
 
@@ -15,6 +18,9 @@ class TransformationPropertyPanel extends StatefulWidget {
   @override
   State<TransformationPropertyPanel> createState() =>
       _TransformationPropertyPanelState();
+
+  Transformation  get transformation => transformationController.value.transformation;
+  List<int>       get args => transformationController.value.args;
 }
 
 class _TransformationPropertyPanelState
@@ -25,8 +31,8 @@ class _TransformationPropertyPanelState
   void initState() {
     super.initState();
     // Assume the first arg is an integer
-    final arg = widget.transformationController.args.isNotEmpty
-        ? widget.transformationController.args[0]
+    final arg = widget.args.isNotEmpty
+        ? widget.args[0]
         : 0;
     _argController = TextEditingController(text: arg.toString());
   }
@@ -50,7 +56,7 @@ class _TransformationPropertyPanelState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Edit ${widget.transformationController.value.name}'),
+            Text('Edit ${widget.transformation.name}'),
             const SizedBox(height: 8),
             // Text field to edit the first argument
             TextField(

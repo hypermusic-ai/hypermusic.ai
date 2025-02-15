@@ -34,7 +34,7 @@ class FeatureEditorController extends ValueNotifier<Feature>
           name: "Root",
           description: "Root feature for composition",
           composites: [],
-          transformations: {},
+          transformationDefs: {},
           runningInstances: {},
           condition: null,
     ))
@@ -85,10 +85,10 @@ class FeatureEditorController extends ValueNotifier<Feature>
       compositesControllers.add(compositeController);
       
       transformationControllers[composite] ??= [];
-      for(Tuple2<Transformation, List<int>> transformationDef in value.transformations[composite] ?? [])
+      for(TransformationDef transformationDef in value.transformationDefs[composite] ?? [])
       {
-        transformationControllers[composite]!.add(TransformationEditorController(transformation: transformationDef.item1));
-        transformationControllers[composite]!.last.setArgs(transformationDef.item2);
+        transformationControllers[composite]!.add(TransformationEditorController(transformationDef : transformationDef));
+        transformationControllers[composite]!.last.setArgs(transformationDef.args);
         transformationControllers[composite]!.last.addListener(notifyListeners);
       }
     }
@@ -105,13 +105,11 @@ class FeatureEditorController extends ValueNotifier<Feature>
     {
       value.composites.add(compositeController.value);
       
-      value.transformations[compositeController.value] ??= [];
-      value.transformations[compositeController.value]!.clear();
+      value.transformationDefs[compositeController.value] ??= [];
+      value.transformationDefs[compositeController.value]!.clear();
       for(TransformationEditorController transformationController in transformationControllers[compositeController.value] ?? [])
       {
-        value.transformations[compositeController.value]!.add(
-          Tuple2(transformationController.value, transformationController.args)
-        );
+        value.transformationDefs[compositeController.value]!.add(transformationController.value);
       }
     }
     if(parent != null) parent!._sync();
@@ -124,7 +122,7 @@ class FeatureEditorController extends ValueNotifier<Feature>
           name: "Root",
           description: "Root feature for composition",
           composites: [],
-          transformations: {},
+          transformationDefs: {},
           runningInstances: {},
           condition: null,
     );
@@ -162,21 +160,23 @@ class FeatureEditorController extends ValueNotifier<Feature>
 
   void addTransformation(Feature feature, Transformation transformation)
   {
-    value.transformations[feature] ??= [];
-    value.transformations[feature]!.add(Tuple2(transformation, []));
+    value.transformationDefs[feature] ??= [];
+    value.transformationDefs[feature]!.add(TransformationDef(transformation : transformation, args : []));
     
     transformationControllers[feature] ??= [];
-    transformationControllers[feature]!.add(TransformationEditorController(transformation: transformation));
+    transformationControllers[feature]!.add(TransformationEditorController(
+      transformationDef: TransformationDef(transformation : transformation, args : []),
+    ));
 
     notifyListeners();
   }
 
   void removeTransformation(Feature feature, Transformation transformation)
   {    
-    value.transformations[feature] ??= [];
+    value.transformationDefs[feature] ??= [];
     int transformationsIdx = -1;
-    if((transformationsIdx = value.transformations[feature]!.indexWhere((element) => element == transformation)) != -1){
-      value.transformations[feature]!.removeAt(transformationsIdx);
+    if((transformationsIdx = value.transformationDefs[feature]!.indexWhere((transformationDef) => transformationDef.transformation == transformation)) != -1){
+      value.transformationDefs[feature]!.removeAt(transformationsIdx);
     }
 
     transformationControllers[feature] ??= [];

@@ -1,10 +1,10 @@
 import 'package:collection/collection.dart';
 
-bool areListsEqualMultiset(List<dynamic> list1, List<dynamic> list2) {
+bool areListsEqualMultiset<T>(List<T> list1, List<T> list2) {
   if (list1.length != list2.length) return false;
 
-  Map<dynamic, int> frequencyMap(List<dynamic> list) {
-    var map = <dynamic, int>{};
+  Map<T, int> frequencyMap(List<T> list) {
+    var map = <T, int>{};
     for (var item in list) {
       map[item] = (map[item] ?? 0) + 1;
     }

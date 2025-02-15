@@ -1,21 +1,21 @@
 import 'dart:developer' as developer;
 import 'package:collection/collection.dart';
-import 'package:tuple/tuple.dart';
 
 // Utils
 import '../utils/multiset_comparison.dart';
+import '../utils/map_comparison.dart';
 
 // Models
 import 'transformation.dart';
 import 'condition.dart';
 import 'running_instance.dart';
 
-class Feature 
+class Feature
 {
   String name;
   final String description;
   final List<Feature> composites;
-  final Map<Feature, List<Tuple2<Transformation, List<int>>>> transformations;
+  final Map<Feature, List<TransformationDef>> transformationDefs;
   final Map<Feature, List<RunningInstance>> runningInstances;
   final Condition? condition;
 
@@ -23,7 +23,7 @@ class Feature
     required this.name,
     required this.description,
     required this.composites,
-    required this.transformations,
+    required this.transformationDefs,
     required this.runningInstances,
     required this.condition,
   });
@@ -33,7 +33,7 @@ class Feature
       'name': name,
       'description': description,
       'composites': composites,
-      'transformations': transformations,
+      'transformationDefs': transformationDefs,
       'runningInstances': runningInstances,
       'condition': condition,
     };
@@ -45,7 +45,7 @@ class Feature
       name: json['name'],
       description: json['description'],
       composites: json['composites'],
-      transformations: json['transformations'],
+      transformationDefs: json['transformationDefs'],
       runningInstances: json['runningInstances'],
       condition: json['condition'],
     );
@@ -55,7 +55,7 @@ class Feature
       String? name,
       String? description,
       List<Feature>? composites,
-      Map<Feature, List<Tuple2<Transformation, List<int>>>>? transformations,
+      Map<Feature, List<TransformationDef>>? transformationDefs,
       Map<Feature, List<RunningInstance>>?  runningInstances,
       Condition? condition
      }) 
@@ -67,10 +67,10 @@ class Feature
         compositesDeepCopy.add(key.copyWith());
     }
 
-    // Map<Feature, Map<Transformation, List<dynamic>>> transformDeepCopy = {};
-    //  (transformations ?? this.transformations).forEach((key, value) {
-    //   transformDeepCopy[key] = value.map((transformation) {return transformation.copyWith();}).toList();
-    // });
+    Map<Feature, List<TransformationDef>> transformDeepCopy = {};
+     (transformationDefs ?? this.transformationDefs).forEach((key, value) {
+      transformDeepCopy[key] = value.map((transformationDef) {return transformationDef.copyWith();}).toList();
+    });
 
     Map<Feature, List<RunningInstance>> runningInstancesDeepCopy = {};
      (runningInstances ?? this.runningInstances).forEach((key, value) {
@@ -81,7 +81,7 @@ class Feature
       name: name ?? this.name,
       description: description ?? this.description,
       composites: compositesDeepCopy,
-      transformations: transformations ?? this.transformations,
+      transformationDefs: transformDeepCopy,
       condition: condition ?? this.condition?.copyWith(),
       runningInstances: runningInstancesDeepCopy,
     );
@@ -95,7 +95,7 @@ class Feature
     return name == other.name &&
         description == other.description &&
         areListsEqualMultiset(composites, other.composites) &&
-        const DeepCollectionEquality().equals(transformations, other.transformations) &&
+        areMapsOfListsEqual(transformationDefs, other.transformationDefs) &&
         condition == other.condition;
   }
 
@@ -104,7 +104,7 @@ class Feature
         name,
         description,
         const ListEquality().hash(composites),
-        const DeepCollectionEquality().hash(transformations),
+        //const MapEquality(keys: IdentityEquality(), values: ListEquality()).hash(transformationDefs),
         condition,
       );
 
@@ -126,11 +126,11 @@ class Feature
 
     if (dimId >= composites.length) throw Exception('Invalid dimension id');
 
-    final List<Tuple2<Transformation, List<int>>> transformationList = transformations[composites[dimId]] ?? [];
-    if (transformationList.isEmpty) return index;
+    final List<TransformationDef> transformationDefsList = transformationDefs[composites[dimId]] ?? [];
+    if (transformationDefsList.isEmpty) return index;
 
-    opId = opId % transformationList.length;
+    opId = opId % transformationDefsList.length;
 
-    return transformationList[opId].item1.run(index, transformationList[opId].item2);
+    return transformationDefsList[opId].transformation.run(index, transformationDefsList[opId].args);
   }
 }

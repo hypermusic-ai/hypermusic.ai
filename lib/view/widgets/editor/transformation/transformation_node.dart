@@ -17,7 +17,9 @@ class TransformationNode extends StatefulWidget {
   @override
   State<TransformationNode> createState() => _TransformationNodeState();
 
-  Transformation   get transformation => transformationController.value;
+  Transformation  get transformation => transformationController.value.transformation;
+  List<int>       get args => transformationController.value.args;
+
 }
 
 class _TransformationNodeState extends State<TransformationNode> {
@@ -26,7 +28,7 @@ class _TransformationNodeState extends State<TransformationNode> {
 
   @override
   void initState() {
-    _argsController.text = widget.transformationController.args.isNotEmpty ? widget.transformationController.args[0].toString() : '';
+    _argsController.text = widget.args.isNotEmpty ? widget.args[0].toString() : '';
     
     super.initState();
   }
@@ -39,9 +41,9 @@ class _TransformationNodeState extends State<TransformationNode> {
   String _getTransformationDescription() {
     switch (widget.transformation.name) {
       case "Add":
-        return "Add ${widget.transformationController.args.isNotEmpty ? widget.transformationController.args[0] : 0} to index";
+        return "Add ${widget.args.isNotEmpty ? widget.args[0] : 0} to index";
       case "Mul":
-        return "Multiply index by ${widget.transformationController.args.isNotEmpty ? widget.transformationController.args[0] : 1}";
+        return "Multiply index by ${widget.args.isNotEmpty ? widget.args[0] : 1}";
       case "Nop":
         return "No operation (pass through)";
       default:

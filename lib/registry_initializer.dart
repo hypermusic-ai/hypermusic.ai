@@ -113,7 +113,7 @@ class RegistryInitializer {
         name: "Pitch",
         description: "A scalar feature representing pitch",
         composites: [],
-        transformations: {},
+        transformationDefs: {},
         condition: null,
         runningInstances: {},
     ));
@@ -128,7 +128,7 @@ class RegistryInitializer {
         name: "Time",
         description: "A scalar feature representing time",
         composites: [],
-        transformations: {},
+        transformationDefs: {},
         condition: null,
         runningInstances: {},
     ));
@@ -143,7 +143,7 @@ class RegistryInitializer {
         name: "Duration",
         description: "A scalar feature representing duration",
         composites: [],
-        transformations: {},
+        transformationDefs: {},
         condition: null,
         runningInstances: {},
     ));
@@ -163,16 +163,16 @@ class RegistryInitializer {
             (await registry.getFeature("Pitch", pitchVer))!,
             (await registry.getFeature("Time", timeVer))!,
         ],
-        transformations: {
+        transformationDefs: {
           (await registry.getFeature("Pitch", pitchVer))!: [
-            Tuple2((await registry.getTransformation("Add", addTransformationVer))!, [1]),
-            Tuple2((await registry.getTransformation("Add", addTransformationVer))!, [2]),
-            Tuple2((await registry.getTransformation("Add", addTransformationVer))!, [3]),
+            TransformationDef(transformation : (await registry.getTransformation("Add", addTransformationVer))!, args : [1]),
+            TransformationDef(transformation : (await registry.getTransformation("Add", addTransformationVer))!, args : [2]),
+            TransformationDef(transformation : (await registry.getTransformation("Add", addTransformationVer))!, args : [3]),
           ],
           (await registry.getFeature("Time", timeVer))!: [
-            Tuple2((await registry.getTransformation("Add", addTransformationVer))!, [1]),
-            Tuple2((await registry.getTransformation("Add", addTransformationVer))!, [2]),
-            Tuple2((await registry.getTransformation("Nop", nopTransformationVer))!, []),
+            TransformationDef(transformation : (await registry.getTransformation("Add", addTransformationVer))!, args : [1]),
+            TransformationDef(transformation : (await registry.getTransformation("Add", addTransformationVer))!, args : [2]),
+            TransformationDef(transformation : (await registry.getTransformation("Nop", nopTransformationVer))!, args : []),
           ],
         },
         condition: null,
@@ -192,16 +192,16 @@ class RegistryInitializer {
             (await registry.getFeature("Duration", durationVer))!, 
             (await registry.getFeature("FeatureA", featureAVer))!,
         ],
-        transformations: {
+        transformationDefs: {
           (await registry.getFeature("Duration", durationVer))!: [
-            Tuple2((await registry.getTransformation("Add", addTransformationVer))!, [1]),
-            Tuple2((await registry.getTransformation("Mul", mulTransformationVer))!, [3]),
-            Tuple2((await registry.getTransformation("Nop", nopTransformationVer))!, []),
+            TransformationDef(transformation : (await registry.getTransformation("Add", addTransformationVer))!, args : [1]),
+            TransformationDef(transformation : (await registry.getTransformation("Mul", mulTransformationVer))!, args : [3]),
+            TransformationDef(transformation : (await registry.getTransformation("Nop", nopTransformationVer))!, args : []),
           ],
           (await registry.getFeature("FeatureA", featureAVer))!: [
-            Tuple2((await registry.getTransformation("Add", addTransformationVer))!, [5]),
-            Tuple2((await registry.getTransformation("Nop", nopTransformationVer))!, []),
-            Tuple2((await registry.getTransformation("Mul", mulTransformationVer))!, [7]),
+            TransformationDef(transformation : (await registry.getTransformation("Add", addTransformationVer))!, args : [5]),
+            TransformationDef(transformation : (await registry.getTransformation("Nop", nopTransformationVer))!, args : []),
+            TransformationDef(transformation : (await registry.getTransformation("Mul", mulTransformationVer))!, args : [7]),
           ],
         },
         condition: null,

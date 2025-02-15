@@ -104,12 +104,12 @@ class _PTTreeEditorNodeState extends State<PTTreeEditorNode> {
         ));
 
         transformationWidgets[compositeController] = [];
-        for(int transformIndex = 0; transformIndex < (widget.featureController.value.transformations[compositeController.value] ?? []).length; transformIndex++)
+        for(int transformIndex = 0; transformIndex < (widget.featureController.value.transformationDefs[compositeController.value] ?? []).length; transformIndex++)
         {
           TransformationEditorController transformationController =  widget.featureController.transformationControllers[compositeController.value]![transformIndex];
           transformationWidgets[compositeController]!.add(
             TransformationNode(
-              key: Key(transformationController.value.name),
+              key: Key(transformationController.value.transformation.name),
               transformationController: transformationController,
             )
           );

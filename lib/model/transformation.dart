@@ -1,5 +1,9 @@
 import 'package:collection/collection.dart';
 
+//utils
+import '../utils/list_comparison.dart';
+
+
 class Transformation {
   final String name;
   final String description;
@@ -47,4 +51,35 @@ class Transformation {
     assert(args.length == argsCount);
     return function(x, args);
   }
+}
+
+class TransformationDef
+{
+  final Transformation transformation;
+  List<int> args; 
+
+  TransformationDef({required this.transformation, required this.args});
+
+  TransformationDef copyWith({Transformation? transformation, List<int>? args}) {
+    return TransformationDef(
+      transformation: transformation ?? this.transformation.copyWith(),
+      args: args ?? this.args.toList(),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! TransformationDef) return false;
+
+    return transformation == other.transformation &&
+        areListsEqual(args, other.args);
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        transformation,
+        const ListEquality().hash(args),
+      );
+
 }
