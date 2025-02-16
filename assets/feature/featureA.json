@@ -1,0 +1,29 @@
+{
+    "name" : "FeatureA",
+    "description" : "",
+    "composites" : ["Pitch", "Time"],
+    "transformations" : [
+        [
+            {
+                "name" : "Add",
+                "args" : [1]
+            },
+            {
+                "name" : "Multiply",
+                "args" : [2]
+            },
+            {
+                "name" : "Nop",
+                "args" : []
+            }
+        ],
+        [
+            {
+                "name" : "Multiply",
+                "args" : [2]
+            }
+        ]
+    ],
+    "runningInstances" : [],
+    "condition" : null
+}

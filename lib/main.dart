@@ -1,30 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+
+//Providers
 import 'providers/meta_mask_provider.dart';
 
-import 'pages/home_page.dart';
-import 'pages/edit_page.dart';
-import 'pages/explore_page.dart';
-import 'pages/trade_page.dart';
-import 'pages/profile_page.dart';
+// Views
+import 'view/pages/home_page.dart';
+import 'view/pages/edit_page.dart';
+import 'view/pages/explore_page.dart';
+import 'view/pages/trade_page.dart';
+import 'view/pages/profile_page.dart';
 
-import 'interfaces/data_interface.dart';
-import 'registry/registry.dart';
-import 'registry/registry_initializer.dart';
+//Controllers
+import 'controller/data_interface.dart';
+import 'controller/registry.dart';
 
-void main() {
+import 'registry_initializer.dart';
+
+void fetchFeatures(DataInterface registry) async {
+  final features = await registry.getAllFeatureNames();
+  print("Features: $features");
+  print("Test Build Web");
+}
+
+void main() async {
+
+  final DataInterface registry = Registry();
+
   // Initialize the registry with default features and transformations
-  final registry = Registry();
-  RegistryInitializer.initialize(registry);
-
-  void fetchFeatures() async {
-    final features = await registry.getAllFeatures();
-    print("Features: $features");
-    print("Test Build Web");
-  }
-
-  fetchFeatures();
+  await RegistryInitializer.initialize(registry);
+  fetchFeatures(registry);
 
   runApp(
     MultiProvider(
@@ -61,12 +67,10 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: Colors.white,
       ),
-      initialRoute: '/',
+      initialRoute: '/edit',
       routes: {
-        '/': (context) => HomePage(),
-        '/edit': (context) => EditPage(
-              dataInterface: Provider.of<DataInterface>(context, listen: false),
-            ),
+        '/': (context) => HomePage(registry: Provider.of<DataInterface>(context, listen: false)),
+        '/edit': (context) => EditPage(registry: Provider.of<DataInterface>(context, listen: false),),
         '/explore': (context) => ExplorePage(),
         '/trade': (context) => TradePage(),
         '/profile': (context) => ProfilePage(),

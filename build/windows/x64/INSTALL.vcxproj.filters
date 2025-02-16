@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\repos\personal\hypermusic.ai\build\windows\x64\CMakeFiles\7fb7fe6dbb347696588ad987061be3ca\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{8AC3D68E-BE5D-3A3B-AB58-C44570EF76C7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
